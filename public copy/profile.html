@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Profiles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f1f1f1;
+        }
+        .profile h3 {
+            margin: 0;
+            color: #333;
+        }
+        .profile p {
+            margin: 5px 0;
+        }
+        .badges {
+            margin-top: 10px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 2px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Member Profiles</h2>
+        <div id="profiles-container"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const profilesContainer = document.getElementById('profiles-container');
+
+            try {
+                // Fetch profiles from the backend
+                const response = await fetch('http://localhost:4000/api/profiles');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profiles');
+                }
+
+                const profiles = await response.json();
+
+                // Check if profiles exist
+                if (profiles.length === 0) {
+                    profilesContainer.innerHTML = '<p>No profiles available.</p>';
+                    return;
+                }
+
+                // Render profiles
+                profiles.forEach(profile => {
+                    const profileDiv = document.createElement('div');
+                    profileDiv.className = 'profile';
+
+                    profileDiv.innerHTML = `
+                        <h3>${profile.name}</h3>
+                        <p><strong>Country:</strong> ${profile.country}</p>
+                        <p><strong>Interests:</strong> ${profile.interests || 'N/A'}</p>
+                        <p><strong>Hobbies:</strong> ${profile.hobbies || 'N/A'}</p>
+                        <p><strong>Family Role:</strong> ${profile.familyRole}</p>
+                        <div class="badges">
+                            <strong>Badges:</strong> 
+                            ${
+                                profile.badges && profile.badges.length > 0
+                                    ? profile.badges.map(badge => `<span class="badge">${badge}</span>`).join('')
+                                    : 'No badges'
+                            }
+                        </div>
+                    `;
+
+                    profilesContainer.appendChild(profileDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching profiles:', error);
+                profilesContainer.innerHTML = '<p>An error occurred while fetching profiles.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

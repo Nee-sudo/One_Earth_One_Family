@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+</head>
+
+<body>
+    <style>
+        body {
+            /* background: -webkit-linear-gradient(left, #3931af, #00c6ff); */
+            background-color: #ff7bbf;
+        }
+
+        .emp-profile {
+            padding: 3%;
+            margin-top: 3%;
+            margin-bottom: 3%;
+            border-radius: 0.5rem;
+            background: #fff;
+        }
+
+        .profile-img {
+            text-align: center;
+        }
+
+        .profile-img img {
+            width: 70%;
+            height: 100%;
+        }
+
+        .profile-img .file {
+            position: relative;
+            overflow: hidden;
+            margin-top: -20%;
+            width: 70%;
+            border: none;
+            border-radius: 0;
+            font-size: 15px;
+            background: #212529b8;
+        }
+
+        .profile-img .file input {
+            position: absolute;
+            opacity: 0;
+            right: 0;
+            top: 0;
+        }
+
+        .profile-head h5 {
+            color: #333;
+        }
+
+        .profile-head h6 {
+            color: #0062cc;
+        }
+
+        .profile-edit-btn {
+            border: none;
+            border-radius: 1.5rem;
+            width: 70%;
+            padding: 2%;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+        }
+
+        .proile-rating {
+            font-size: 12px;
+            color: #818182;
+            margin-top: 5%;
+        }
+
+        .proile-rating span {
+            color: #495057;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .profile-head .nav-tabs {
+            margin-bottom: 5%;
+        }
+
+        .profile-head .nav-tabs .nav-link {
+            font-weight: 600;
+            border: none;
+        }
+
+        .profile-head .nav-tabs .nav-link.active {
+            border: none;
+            border-bottom: 2px solid #0062cc;
+        }
+
+        .profile-work {
+            padding: 14%;
+            margin-top: -15%;
+        }
+
+        .profile-work p {
+            font-size: 12px;
+            color: #818182;
+            font-weight: 600;
+            margin-top: 10%;
+        }
+
+        .profile-work a {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-work ul {
+            list-style: none;
+        }
+
+        .profile-tab label {
+            font-weight: 600;
+        }
+
+        .profile-tab p {
+            font-weight: 600;
+            color: #0062cc;
+        }
+
+        /* Add this media query for mobile devices */
+        @media (max-width: 768px) {
+            body {
+                text-align: center;
+            }
+
+            .emp-profile {
+                margin: 0 auto;
+                text-align: center;
+            }
+
+            .profile-img,
+            .profile-head,
+            .profile-work,
+            .profile-tab {
+                text-align: center;
+            }
+
+            .profile-img img {
+                width: 70%;
+                height: auto;
+            }
+
+            .profile-head h5,
+            .profile-head h6,
+            .proile-rating,
+            .profile-work p,
+            .profile-work a,
+            .profile-tab label,
+            .profile-tab p {
+                text-align: center;
+            }
+
+            .row {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .col-md-4,
+            .col-md-6,
+            .col-md-8 {
+                width: 100%;
+            }
+
+            .profile-edit-btn {
+                width: 50%;
+            }
+        }
+
+        /* css for interests */
+        #interests,
+        #hobbies {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .interest-button,
+        .hobby-button {
+            padding: 5px 10px;
+            /* Increased padding for better visual */
+            font-size: 14px;
+            background-color: #e1e9e1;
+            color: black;
+            border: 1px solid #ccc;
+            /* Lighter border color */
+            border-radius: 31px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .interest-button:hover,
+        .hobby-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            /* Slight lift effect */
+        }
+
+        .interest-button:active,
+        .hobby-button:active {
+            background-color: #3e8e41;
+            /* Darker shade when clicked */
+            transform: translateY(0);
+        }
+
+        .interest-button:focus,
+        .hobby-button:focus {
+            outline: none;
+            box-shadow: 0 0 5px 2px rgba(72, 211, 100, 0.6);
+            /* Glow effect on focus */
+        }
+    </style>
+    <div class="container emp-profile">
+        <form method="post">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="profile-img">
+                        <img src="/public/img/image.png"
+                            alt="" />
+                        <div class="file btn btn-lg btn-primary">
+                            Change Photo
+                            <input type="file" name="file" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="profile-head">
+                        <h5 id="Headusername">
+                            Kshiti Ghelani
+                        </h5>
+                        <h6 id="familyRole">
+                            Family Role
+                        </h6>
+                        <p class="proile-rating">RANKINGS : <span>8/10</span></p>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                                    aria-controls="home" aria-selected="true">About</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                                    aria-controls="profile" aria-selected="false">Timeline</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <input type="button" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"
+                        onclick="window.location.href='/editProfile';" /> <br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="profile">
+                        <p>BADGES LEVEL</p>
+                        <p id="badge"></p>
+                        <a href="">Not provided</a><br />
+                        <!-- <p>Bio</p>
+                        <a href="" id="bio">I am a programmer</a> -->
+                        <label>Bio</label>
+                        <p id="bio" style="color: #0062cc;">Not provided</p>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="tab-content profile-tab" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Name</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p id="username">Kshiti123</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Email</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p id="email">kshitighelani@gmail.com</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Country</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p id="country">Country</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Interests</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p id="interests">Reading and Travelling </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Hobbies</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p id="hobbies">Hobbies</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Experience</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>Expert</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Hourly Rate</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>10$/hr</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Total Projects</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>230</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>English Level</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>Expert</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Availability</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>6 months</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Your Bio</label><br />
+                                    <p>Your detail description</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <center>
+                <input type="button" class="profile-edit-btn" name="btnAddMore" value="logout" style="color: blue;"
+                    onclick="logout()" />
+            </center>
+        </form>
+    </div>
+    <script>
+        const token = new URLSearchParams(window.location.search).get('token');
+        if (token) {
+            localStorage.setItem('jwt', token); // Store the token securely in localStorage
+            window.history.replaceState({}, document.title, '/dashboard'); // Clean the URL
+        }
+
+        async function fetchUserData() {
+            try {
+                const jwt = localStorage.getItem('jwt');
+                if (!jwt) {
+                    throw new Error('Token not found');
+                }
+
+                const response = await fetch('/api/user', {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    // document.getElementById('welcome-message').textContent = `Hello, ${user.username}!`;
+                    document.getElementById('Headusername').textContent = user.username;
+                    document.getElementById('username').textContent = user.username;
+                    // document.getElementById('username').textContent = user.first_name;
+                    document.getElementById('email').textContent = user.email;
+                    console.log(user.username);
+                    console.log(user.hobbies)
+                    console.log(user.email);
+                    const email = user.email;
+                    fetchDetails(email);
+                } else {
+                    document.getElementById('welcome-message').textContent = "Welcome! Your profile details couldn't be loaded.";
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('jwt'); // Clear the token
+            window.location.href = '/'; // Redirect to the homepage or login page
+        }
+        //fetching user details
+        async function fetchDetails(email) {
+            try {
+                const userData = await fetch('/api/loginn', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+                const result = await userData.json();
+                // console.log(userData.username);
+                // console.log(userData.hobbies);
+
+                if (result.ok) {
+                    console.log(result.username);
+                } else {
+                    console.log(result.username);
+                    console.log(result.country),
+                        console.log(result.bio);
+                    console.log('countryname', result.country);
+                    console.log(result.hobbies);
+                    console.log(result.message);
+                    console.log(result.token);
+                    document.getElementById('bio').textContent = result.bio;
+                    document.getElementById('country').textContent = result.country;
+                    console.log('countryname', result.country);
+                    // document.getElementById('interests').textContent = result.interests;
+                    // Assuming result.interests is an array of interests
+                    const interestsContainer = document.getElementById('interests');
+                    // Clear existing content (if any)
+                    interestsContainer.innerHTML = '';
+                    // Loop through each interest and create a button for it
+                    result.interests.forEach(interest => {
+                        const button = document.createElement('button');
+                        button.textContent = interest; // Set the button text to the interest name
+                        button.classList.add('interest-button'); // Add a class for styling (optional)
+                        interestsContainer.appendChild(button); // Append the button to the interests container
+                    });
+
+                    // console.log('interestes', result.interests);
+                    // document.getElementById('hobbies').textContent = result.hobbies;
+                    // Assuming result.hobbies is an array of hobbies
+                    const hobbiesContainer = document.getElementById('hobbies');
+                    // Clear existing content (if any)
+                    hobbiesContainer.innerHTML = '';
+                    // Loop through each hobby and create a button for it
+                    result.hobbies.forEach(hobby => {
+                        const button = document.createElement('button');
+                        button.textContent = hobby; // Set the button text to the hobby name
+                        button.classList.add('hobby-button'); // Add a class for styling (optional)
+                        hobbiesContainer.appendChild(button); // Append the button to the hobbies container
+                    });
+
+                    document.getElementById('familyRole').textContent = result.familyRole;
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                document.getElementById('login-message').textContent = 'An error occurred. Please try again.';
+            };
+        };
+
+        fetchUserData();
+
+        // On dashboard page
+        async function loadUserData() {
+            try {
+                const token = localStorage.getItem('jwt');
+                const response = await fetch('/api/user', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                if (response.ok) {
+                    const userData = await response.json();
+                } else {
+                    throw new Error('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+        loadUserData();
+    </script>
+</body>
+
+</html>
