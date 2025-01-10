@@ -106,8 +106,8 @@
 <body>
     <div class="form-container">
         <!-- <h2>Create Your Profile</h2> -->
-        <form id="profile-form" enctype = "multipart/form-data">
-            <div class="form-group" style="display: none;" >
+        <form id="profile-form" enctype="multipart/form-data">
+            <div class="form-group" style="display: none;">
                 <label for="profile-photo">Profile Photo:</label>
                 <input type="file" id="profilePhoto" name="Photo" accept="image/*">
             </div>
@@ -233,17 +233,21 @@
                 const formData = new FormData(form);
                 formData.append('profilePhoto', profilePhoto);
                 const data = Object.fromEntries(formData.entries());
-                
+
 
                 // Add selected hobbies and interests
                 data.interests = getSelectedOptions(interestsButtons);
                 data.hobbies = getSelectedOptions(hobbiesButtons);
+                console.log('hobboes', data.hobbies);
 
                 // Validate required fields
                 if (!data.bio?.trim() || !data.country?.trim() || !data.familyRole?.trim()) {
                     alert('Please fill out all required fields.');
                     return;
                 }
+
+                formData.append('hobbies', JSON.stringify(getSelectedOptions(hobbiesButtons)));
+                formData.append('interests', JSON.stringify(getSelectedOptions(interestsButtons)));
 
                 // Collect selected badges
                 data.badges = formData.getAll('badges[]') || [];
@@ -263,7 +267,7 @@
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${jwt}`,
-                            
+
                         },
                         body: formData,
                     });

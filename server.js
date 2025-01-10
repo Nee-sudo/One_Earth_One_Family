@@ -21,22 +21,22 @@ const SECRET_KEY = process.env.SECRET_KEY || 'default_secret';
 
 // Models
 const User = require('./models/User');
-const Member = require('./models/Profiles');
+// const Member = require('./models/Profiles');
 
 // App Setup
 const app = express();
 //set engine
-app.set('view engine' ,'ejs');
-app.set('views', 'views'); 
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-app.use(express.static('OEOF')); 
-app.use(express.static('public')); 
+app.use(express.static('OEOF'));
+app.use(express.static('public'));
 app.use(express.static('public copy'));
 app.use('/uploads', express.static('static/uploads'));
 
 
-app.use(bodyParser.json( { limit: '50mb' }));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 
 // Configure storage for multer
@@ -85,7 +85,7 @@ function authenticateJWT(req, res, next) {
     }
 }
 
-app.get('/signup',(req,res)=>{
+app.get('/signup', (req, res) => {
     res.render('signup');
 })
 // Routes
@@ -95,19 +95,19 @@ app.get('/', (req, res) => {
 // app.get('/dashboards', (req, res) => {
 //     res.sendFile(__dirname + '/public copy/dashboards.html');
 // });
-app.get('/dashboards',(req,res) =>{
+app.get('/dashboards', (req, res) => {
     res.render('dashboards');
 })
 // app.get('/dashboard', (req, res) => {
-   
+
 //     res.render('dashbaords');
 // });
-app.get('/editProfile',(req,res)=>{
+app.get('/editProfile', (req, res) => {
     res.render('index_form');
- })
+})
 app.post('/api/signup', async (req, res) => {
     try {
-        const { first_name,last_name, email, password } = req.body;
+        const { first_name, last_name, email, password } = req.body;
         if (await User.findOne({ email })) {
             return res.status(400).json({ message: 'Email already in use.' });
         }
@@ -142,7 +142,7 @@ app.post('/api/signup', async (req, res) => {
             subject: 'Verify Your Email',
             html: `<p>Click <a href="${verificationUrl}">here</a> to verify your account.</p>`,
         });
-       
+
         res.status(201).json({ message: 'User registered. Verification email sent.' });
     } catch (error) {
         console.error(error);
@@ -165,9 +165,9 @@ app.get('/api/verify/:token', async (req, res) => {
         await user.save();
 
         // Generate JWT
-        const jwtToken = jwt.sign({ id: user._id,username: user.first_name, email: user.email ,profile: user.profile }, SECRET_KEY, { expiresIn: '1h' });
+        const jwtToken = jwt.sign({ id: user._id, username: user.first_name, email: user.email, profile: user.profile }, SECRET_KEY, { expiresIn: '1h' });
         res.redirect(`/dashboards?token=${jwtToken}`);
-        
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error.' });
@@ -205,7 +205,7 @@ app.get('/api/user', authenticateJWT, async (req, res) => {
             hobbies: user.profile?.hobbies || 'Not provided',
             familyRole: user.profile?.familyRole || 'Not provided',
         });
-        console.log("loaded  user data",user);
+        console.log("loaded  user data", user);
     } catch (error) {
         console.error('Error in /api/user:', error);
         res.status(500).json({ message: 'Failed to fetch user data' });
@@ -228,8 +228,14 @@ app.get('/api/profiles', async (req, res) => {
 app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req, res) => {
     try {
         const { bio, country, interests, hobbies, familyRole, badges } = req.body;
-        const photoPath = req.file?.path; // Access the uploaded photo's file path
-        console.log('Path received',photoPath);
+        console.log('Type of hobbies:', typeof hobbies, hobbies);
+        console.log('Type of interests:', typeof interests, interests);
+        const parsedHobbies = typeof hobbies === 'string' ? JSON.parse(hobbies) : hobbies;
+        const parsedInterests = typeof interests === 'string' ? JSON.parse(interests) : interests;
+
+
+        // const photoPath = req.file?.path; // Access the uploaded photo's file path
+        // console.log('Path received',photoPath);
         // Ensure required fields are present
         if (!bio || !country || !familyRole) {
             return res.status(400).json({ message: 'Missing required fields: bio, country, or familyRole.' });
@@ -243,11 +249,11 @@ app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req,
             {
                 'profile.bio': bio,
                 'profile.country': country,
-                'profile.interests': Array.isArray(interests) ? interests : [],
-                'profile.hobbies': Array.isArray(hobbies) ? hobbies : [],
+                'profile.interests': Array.isArray(parsedInterests) ? parsedInterests : [],
+                'profile.hobbies': Array.isArray(parsedHobbies) ? parsedHobbies : [],
                 'profile.familyRole': familyRole,
                 'profile.badges': Array.isArray(badges) ? badges : [],
-                'profile.photo': photoPath, // Save the file path in the database
+                // 'profile.photo': photoPath, // Save the file path in the database
             },
             { new: true, runValidators: true }
         ).select('-password');
@@ -279,7 +285,7 @@ app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req,
     }
 });
 app.get('/login', (req, res) => {
-   
+
     res.render('login');
 });
 // Login again Endpoint
@@ -320,12 +326,12 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/api/loginn', async (req, res) => {
     const { email } = req.body;
-    console.log('request came',email);
+    console.log('request came', email);
 
     try {
         // Find user by email
         const user = await User.findOne({ email });
-        console.log("user details",user);
+        console.log("user details", user);
         if (!user) {
             return res.status(400).json({ message: 'Invalid email or password.' });
         }
@@ -333,41 +339,42 @@ app.post('/api/loginn', async (req, res) => {
         // Check if the user is verified
         if (!user.verified) {
             return res.status(403).json({ message: 'Please verify your email before logging in.' });
-          
+
         }
 
-     const profileData = {
+        const profileData = {
 
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        bio: user.profile?.bio || 'Not provided',
-        country: user.profile?.country || 'Not provided',
-        interests: user.profile?.interests || 'Not provided',
-        hobbies: user.profile?.hobbies || 'Not provided',
-        familyRole: user.profile?.familyRole || 'Not provided',
-    };
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            bio: user.profile?.bio || 'Not provided',
+            country: user.profile?.country || 'Not provided',
+            interests: user.profile?.interests || 'Not provided',
+            hobbies: user.profile?.hobbies || 'Not provided',
+            familyRole: user.profile?.familyRole || 'Not provided',
+        };
 
         // Generate JWT
         const token = jwt.sign(
-            { userId: user._id, username: 'eeraj', email: user.email ,hobbies:user.profile.hobbies },
+            { userId: user._id, username: 'eeraj', email: user.email, hobbies: user.profile.hobbies },
             SECRET_KEY,
             { expiresIn: '1h' } // Token expires in 1 hour
         );
-        console.log("toke details",token);
+        console.log("toke details", token);
         // res.json( { userId: user._id, username: 'eeraj', email: user.email ,hobbies:user.profile.hobbies });
         const hobbies = user.profile.hobbies;
         console.log(hobbies);
-        res.status(200).json({ token, message: 'Details fetched done!' ,
-             bio: user.profile?.bio || 'Not provided',
-             hobbies:user.profile.hobbies ,
-             country: user.profile?.country || 'Not provided',
-             interests: user.profile?.interests || 'Not provided',
-             familyRole: user.profile?.familyRole || 'Not provided'
-            });
+        res.status(200).json({
+            token, message: 'Details fetched done!',
+            bio: user.profile?.bio || 'Not provided',
+            hobbies: user.profile.hobbies,
+            country: user.profile?.country || 'Not provided',
+            interests: user.profile?.interests || 'Not provided',
+            familyRole: user.profile?.familyRole || 'Not provided'
+        });
     } catch (error) {
         console.error('Error during data fetching:', error);
-        res.status(500).json({ message: 'An error occurred. Please try again.'  });
+        res.status(500).json({ message: 'An error occurred. Please try again.' });
     }
 });
 
