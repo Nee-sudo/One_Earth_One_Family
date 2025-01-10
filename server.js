@@ -134,8 +134,9 @@ app.post('/api/signup', async (req, res) => {
                 pass: process.env.EMAIL_PASS,
             },
         });
-
-        const verificationUrl = `http://localhost:${PORT}/api/verify/${verificationToken}`;
+        const publicUrl = process.env.PUBLIC_URL || `http://localhost:${PORT}`;
+        const verificationUrl = `${publicUrl}/api/verify/${verificationToken}`;
+        // const verificationUrl = `http://localhost:${PORT}/api/verify/${verificationToken}`;
         await transporter.sendMail({
             to: email,
             subject: 'Verify Your Email',
