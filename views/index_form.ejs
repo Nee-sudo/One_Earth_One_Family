@@ -277,6 +277,26 @@
                         alert('Profile submitted successfully!');
                         console.log('Server response:', result);
                         form.reset(); // Clear the form
+                        async function redirectToDashboard() {
+                            const primaryUrl = 'https://oneearthonefamily.up.railway.app/dashboards';
+                            const fallbackUrl = 'http://localhost:4000/dashboards';
+
+                            try {
+                                const response = await fetch(primaryUrl, { method: 'HEAD' }); // Check if the primary URL is reachable
+                                if (response.ok) {
+                                    window.location.href = primaryUrl; // Redirect to the primary URL
+                                } else {
+                                    throw new Error('Primary URL not reachable'); // Throw an error if the response is not OK
+                                }
+                            } catch (error) {
+                                console.error(error);
+                                window.location.href = fallbackUrl; // Redirect to the fallback URL
+                            }
+                        }
+
+                        // Call the function to perform the redirection
+                        redirectToDashboard();
+
                     } else {
                         const error = await response.json();
                         console.error('Error submitting profile:', error.message || response.statusText);
