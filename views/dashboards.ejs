@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -455,10 +455,10 @@
                     interestsContainer.innerHTML = '';
                     // Loop through each interest and create a button for it
                     result.interests.forEach(interest => {
-                        const button = document.createElement('button');
-                        button.textContent = interest; // Set the button text to the interest name
-                        button.classList.add('interest-button'); // Add a class for styling (optional)
-                        interestsContainer.appendChild(button); // Append the button to the interests container
+                        const div = document.createElement('div');
+                        div.textContent = interest; // Set the button text to the interest name
+                        div.classList.add('interest-button'); // Add a class for styling (optional)
+                        interestsContainer.appendChild(div); // Append the button to the interests container
                     });
 
                     // console.log('interestes', result.interests);
@@ -469,7 +469,7 @@
                     hobbiesContainer.innerHTML = '';
                     // Loop through each hobby and create a button for it
                     result.hobbies.forEach(hobby => {
-                        const button = document.createElement('button');
+                        const button = document.createElement('div');
                         button.textContent = hobby; // Set the button text to the hobby name
                         button.classList.add('hobby-button'); // Add a class for styling (optional)
                         hobbiesContainer.appendChild(button); // Append the button to the hobbies container
