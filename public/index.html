@@ -26,23 +26,68 @@
   <link href="assets/vendor/animate.css/animate.min.css" rel="stylesheet">
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
-
 </head>
 
 <body class="index-page">
+  <style>
+/* Default styles: hide the nav menu on larger screens */
+.navemenu {
+    display: none; /* Hide by default */
+}
 
+/* Media query for mobile devices */
+@media (max-width: 768px) { /* Adjust the max-width as needed */
+    .navemenu {
+        display: block; /* Show on mobile */
+    }
+
+    /* Style the ul to display items horizontally */
+    .navemenu ul {
+        list-style-type: none; /* Remove bullet points */
+        padding: 0; /* Remove default padding */
+        margin: 0; /* Remove default margin */
+        display: flex; /* Use flexbox for horizontal layout */
+        justify-content: space-around; /* Space items evenly */
+    }
+
+    /* Style the li elements */
+    .navemenu li {
+        margin: 0 10px; /* Add some horizontal spacing between items */
+    }
+
+    /* Style the links */
+    .navemenu a {
+        text-decoration: none; /* Remove underline from links */
+        color: #6610f2; /* Default link color */
+        padding: 10px 15px; /* Add some padding for better click area */
+        transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+    }
+
+    /* Hover effect */
+    .navemenu a:hover {
+        background-color: #eee4f1; /* Change background color on hover */
+        color:blue; /* Change text color on hover */
+        border-radius: 10px; /* Optional: add rounded corners */
+    }
+}
+</style>
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-
       <a href="index.html" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
         <h1 class="sitename">OEOF❤️</h1>
       </a>
-
+<div>
+  <nav id="navemenu" class="navemenu">
+    <ul>
+      <li><a href="/signup" class="badge badge-dark" style="color: #6610f2;">Signup</a></li>
+      <li><a href="/login" class="badge badge-dark" style="color: #6610f2;">Login</a></li>
+    </ul>
+  </nav>
+</div>
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#hero" class="active">Welcome</a></li>
@@ -50,26 +95,6 @@
           <li><a href="#about">About</a></li>
           <li><a href="#services">How We Help</a></li>
           <li><a href="#portfolio">World-wide-photoes</a></li>
-          <!-- <li><button type="button" c>Light</button></li> -->
-          <!-- <li><a href="blog.html">Highlights</a></li> -->
-          <!-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i
-                    class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li> -->
           <li><a href="#contact">Contact</a></li>
           <li><a href="/signup" class="badge badge-dark" style="color: #6610f2;">Signup</a></li>
           <li><a href="/login" class="badge badge-dark" style="color: #6610f2;">Login</a></li>
