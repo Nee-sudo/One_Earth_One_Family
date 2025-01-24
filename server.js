@@ -16,7 +16,7 @@ const multer = require('multer');
 
 // Constants
 const PORT = process.env.PORT || 4000;
-const MONGO_URI = process.env.MONGO_URI || 'your-mongo-uri';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb url';
 const SECRET_KEY = process.env.SECRET_KEY || 'default_secret';
 
 // Models
@@ -104,7 +104,10 @@ app.get('/dashboards', (req, res) => {
 // });
 app.get('/editProfile', (req, res) => {
     res.render('index_form');
-})
+});
+app.get('/profile', (req, res) => {
+    res.render('userProfile');
+});
 app.post('/api/signup', async (req, res) => {
     try {
         const { first_name, last_name, email, password } = req.body;

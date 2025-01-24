@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Card</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            background-color: #ff7bbf;
+            font-family: "Poppins", sans-serif;
+            font-weight: 300;
+        }
+
+        .container {
+            height: 100vh;
+        }
+
+        .card {
+            width: 380px;
+            border: none;
+            border-radius: 15px;
+            padding: 8px;
+            background-color: #fff;
+            position: relative;
+            height: 370px;
+        }
+
+        .upper {
+            height: 100px;
+        }
+
+        .upper img {
+            width: 100%;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .user {
+            position: relative;
+        }
+
+        .profile img {
+            height: 80px;
+            width: 80px;
+            margin-top: 2px;
+        }
+
+        .profile {
+            position: absolute;
+            top: -50px;
+            left: 38%;
+            height: 90px;
+            width: 90px;
+            border: 3px solid #fff;
+            border-radius: 50%;
+        }
+
+        .follow {
+            border-radius: 15px;
+            padding-left: 20px;
+            padding-right: 20px;
+            height: 35px;
+        }
+
+        .stats span {
+            font-size: 29px;
+        }
+    </style>
+</head>
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Warning!</strong> This page is under development.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<body>
+
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card">
+        <div class="upper">
+            <img src="https://i.imgur.com/Qtrsrk5.jpeg" class="img-fluid">
+        </div>
+        <div class="user text-center">
+            <div class="profile">
+                <img src="https://i.imgur.com/JgYD2nQ.jpeg" class="rounded-circle" width="80">
+            </div>
+        </div>
+        <div class="mt-5 text-center">
+            <h4 class="mb-0">User name</h4>
+            <span class="text-muted d-block mb-2">Country</span>
+            <button class="btn btn-primary btn-sm follow">Message</button>
+            <div class="d-flex justify-content-between align-items-center mt-4 px-4">
+                <div class="stats">
+                    <h6 class="mb-0">Hobbies</h6>
+                    <span>8,797</span>
+                </div>
+                <div class="stats">
+                    <h6 class="mb-0">Interests</h6>
+                    <span>142</span>
+                </div>
+                <div class="stats">
+                    <h6 class="mb-0">Ranks</h6>
+                    <span>129</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
