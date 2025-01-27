@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .profile-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    p {
+      margin: 10px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <h1>User Profile</h1>
+    <div id="user-data">
+      <!-- User data will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <script>
+    // Get user ID from the query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('id');
+
+    if (!userId) {
+      document.getElementById('user-data').innerHTML = '<p>User ID not provided!</p>';
+    } else {
+      // Fetch the user data by ID
+      fetch(`/api/profiles/${userId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+          }
+          return response.json();
+        })
+        .then(user => {
+          // Display user data
+          document.getElementById('user-data').innerHTML = `
+            <p><strong>Full Name:</strong> ${user.first_name} ${user.last_name}</p>
+            <p><strong>Email:</strong> ${user.eemail}</p>
+            <p><strong>Country:</strong> ${user.country}</p>
+            <p><strong>Interests:</strong> ${user.interests}</p>
+            <p><strong>Hobbies:</strong> ${user.hobbies}</p>
+            <p><strong>Family Role:</strong> ${user.familyRole}</p>
+          `;
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+          document.getElementById('user-data').innerHTML = '<p>Failed to load user data!</p>';
+        });
+    }
+  </script>
+</body>
+</html>

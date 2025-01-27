@@ -16,7 +16,7 @@ const multer = require('multer');
 
 // Constants
 const PORT = process.env.PORT || 4000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb url';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://neer:bjFBXFCYd00Gifiv@my-journal-app.ges8oic.mongodb.net/?retryWrites=true&w=majority';
 const SECRET_KEY = process.env.SECRET_KEY || 'default_secret';
 
 // Models
@@ -216,15 +216,56 @@ app.get('/api/user', authenticateJWT, async (req, res) => {
 });
 
 // GET: Fetch all profiles (optional)
-app.get('/api/profiles', async (req, res) => {
+app.get('/profileList', (req, res) => {
+    res.render('profileList');
+});
+app.get('/userProfile', (req, res) => {
+    res.render('userProfilee');
+});
+app.get('/api/profiles/:id', async (req, res) => {
     try {
-        const profiles = await User.profile.find();
-        res.json(profiles);
+        const user = await User.findById(req.params.id).select('-password'); // Exclude password
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user);
     } catch (error) {
-        console.error('Error fetching profiles:', error);
-        res.status(500).json({ error: 'Failed to fetch profiles' });
+        console.error('Error fetching user by ID:', error);
+        res.status(500).json({ message: 'Failed to fetch user data' });
     }
 });
+
+app.get('/api/profiles', async (req, res) => {
+    try {
+        // Fetch all users, excluding their passwords
+        const users = await User.find().select('-password');
+
+        // Check if no users are found
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        // Map the user data to a simplified structure
+        const userList = users.map(user => ({
+            id: user._id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            // email: user.email,
+            country: user.profile?.country || 'Not provided',
+            interests: user.profile?.interests || 'Not provided',
+            hobbies: user.profile?.hobbies || 'Not provided',
+            familyRole: user.profile?.familyRole || 'Not provided',
+        }));
+
+        // Send the response
+        res.json(userList);
+        console.log('User list loaded successfully for homepage:', userList);
+    } catch (error) {
+        console.error('Error in /api/profiles:', error);
+        res.status(500).json({ message: 'Failed to fetch user data' });
+    }
+});
+
 // Protect the user data route
 // Serve static files
 
