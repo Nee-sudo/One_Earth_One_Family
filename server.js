@@ -16,7 +16,7 @@ const multer = require('multer');
 
 // Constants
 const PORT = process.env.PORT || 4000;
-const MONGO_URI = process.env.MONGO_URI || 'mongo db url';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://neer:bjFBXFCYd00Gifiv@my-journal-app.ges8oic.mongodb.net/?retryWrites=true&w=majority';
 const SECRET_KEY = process.env.SECRET_KEY || 'default_secret';
 
 // Models
@@ -33,24 +33,34 @@ app.use(express.static('OEOF'));
 app.use(express.static('public'));
 app.use(express.static('public copy'));
 app.use('/uploads', express.static('static/uploads'));
-
+// Static Files
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 
-// Configure storage for multer
+// Storage Setup (Uploads to "public/images/")
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'static/uploads/'); // Directory to save uploaded files
+        cb(null, "public/img/"); // Save files in 'public/images/'
     },
     filename: (req, file, cb) => {
-        const uniqueName = `${Date.now()}-${file.originalname}`;
-        cb(null, uniqueName); // Ensure unique file names
-    },
+        cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
+    }
 });
-
+ 
 const upload = multer({ storage });
+
+// API to Upload Image
+app.post("/upload", upload.single("file"), (req, res) => {
+    console.log('Request received:', req.file);
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    const imageUrl = `/img/${req.file.filename}`; // Public URL path
+    res.json({ imageUrl }); // Send image URL as response
+    console.log('Image uploaded successfully:', imageUrl);
+});
 
 // Session Setup
 app.use(
@@ -61,9 +71,6 @@ app.use(
         cookie: { secure: false }, // Change to true in production with HTTPS
     })
 );
-
-// Static Files
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
 mongoose

@@ -288,11 +288,11 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="profile-img">
-                        <img src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1737365724~exp=1737369324~hmac=15c0471c5ffee402c39c2a56d0d151e8f8c5320fd87c271214273f513f9bc572&w=740"
+                        <img src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1737365724~exp=1737369324~hmac=15c0471c5ffee402c39c2a56d0d151e8f8c5320fd87c271214273f513f9bc572&w=740" id="profilePic"
                             alt="" />
                         <div class="file btn btn-lg btn-primary">
-                            Change Photo
-                            <input type="file" name="file" />
+                            <input type="file" name="file" id="fileInput"  />
+                            <button onclick="uploadFile()">Change Photo</button>
                         </div>
                     </div>
                 </div>
@@ -562,6 +562,32 @@
             }
         }
         loadUserData();
+//upload file
+    async function uploadFile() {
+    const fileInput = document.getElementById("fileInput").files[0];
+    if (!fileInput) {
+        alert("Please select an image!");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("file", fileInput);
+
+    const response = await fetch("/upload", {
+        method: "POST",
+        body: formData
+    });
+    if (!response.ok) {
+        alert("Failed to upload image!");
+        return;
+    }
+
+    const data = await response.json();
+    if (data.imageUrl) {
+        document.getElementById("profilePic").src = data.imageUrl; // Display uploaded image
+    }
+}
+console.log('connected')
     </script>
 </body>
 
