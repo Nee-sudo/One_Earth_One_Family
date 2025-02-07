@@ -82,13 +82,18 @@
         }
     </style>
 </head>
+
+<body>
+
+<!-- Alert Message -->
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
   <strong>Warning!</strong> This page is under development.
   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-<body>
+
+<!-- User Profile Card -->
 <div class="container d-flex justify-content-center align-items-center">
     <div class="card">
         <div class="upper">
@@ -96,40 +101,81 @@
         </div>
         <div class="user text-center">
             <div class="profile">
-                <img src="https://i.imgur.com/JgYD2nQ.jpeg" class="rounded-circle" width="80">
+                <img id="profileImage" src="https://via.placeholder.com/150" class="rounded-circle" width="80">
             </div>
         </div>
         <div class="mt-5 text-center">
-            <h4 class="mb-0">User Name</h4>
-            <span class="text-muted d-block mb-2">Country</span>
+            <h4 class="mb-0" id="userName">User Name</h4>
+            <span class="text-muted d-block mb-2" id="Country">Country</span>
             <button class="btn btn-primary btn-sm follow">Message</button>
             <div class="d-flex flex-column align-items-center mt-4 px-4">
                 <div class="stats">
                     <h6 class="mb-0">Hobbies</h6>
-                    <ul>
-                        <li>Reading</li>
-                        <li>Photography</li>
-                        <li>Traveling</li>
-                        <li>Cooking</li>
-                    </ul>
+                    <ul id="hobbies"></ul>
                 </div>
                 <div class="stats mt-3">
                     <h6 class="mb-0">Interests</h6>
-                    <ul>
-                        <li>Technology</li>
-                        <li>Music</li>
-                        <li>Art</li>
-                        <li>Fitness</li>
-                    </ul>
+                    <ul id="interests"></ul>
                 </div>
                 <div class="stats mt-3">
-                    <h6 class="mb-0">Ranks</h6>
-                    <span>Top 5% in Coding Challenges</span>
+                    <h6 class="mb-0">Badges</h6>
+                    <span id="badges">Loading...</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Get user ID from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('id');
+
+    if (!userId) {
+        alert('User ID not provided!');
+    } else {
+        fetch(`/api/profiles/${userId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("User data not found");
+                }
+                return response.json();
+            })
+            .then(user => {
+                if (!user) {
+                    throw new Error("User data is empty");
+                }
+
+                // Handle profile image
+                const profileImage = user.profile.photoURL && user.profile.photoURL !== "" 
+                    ? user.profile.photoURL 
+                    : "https://via.placeholder.com/150";
+                document.getElementById("profileImage").src = profileImage;
+
+                // Populate user data
+                document.getElementById("userName").innerText = `${user.first_name} ${user.last_name}`;
+                document.getElementById("Country").innerText = user.profile.country;
+
+                // Map hobbies & interests
+                document.getElementById("hobbies").innerHTML = user.profile.hobbies.length
+                    ? user.profile.hobbies.map(h => `<li>${h}</li>`).join("")
+                    : "<li>N/A</li>";
+
+                document.getElementById("interests").innerHTML = user.profile.interests.length
+                    ? user.profile.interests.map(i => `<li>${i}</li>`).join("")
+                    : "<li>N/A</li>";
+
+                // Map badges
+                document.getElementById("badges").innerText = user.profile.badges.length 
+                    ? user.profile.badges.join(", ") 
+                    : "No Badges";
+            })
+            .catch(error => {
+                console.error("Error fetching user data:", error);
+                alert("Failed to load user data!");
+            });
+    }
+</script>
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Profile</title>
-  <style>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -26,47 +26,56 @@
       color: #555;
     }
   </style>
-</head>
-<body>
-  <div class="profile-container">
-    <h1>User Profile</h1>
-    <div id="user-data">
-      <!-- User data will be dynamically inserted here -->
+  </head>
+  <body>
+    <div class="profile-container">
+      <h1>User Profile</h1>
+      <div id="user-data">
+        <!-- User data will be dynamically inserted here -->
+      </div>
     </div>
-  </div>
 
-  <script>
-    // Get user ID from the query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('id');
+    <script>
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get('id');
 
-    if (!userId) {
-      document.getElementById('user-data').innerHTML = '<p>User ID not provided!</p>';
-    } else {
-      // Fetch the user data by ID
-      fetch(`/api/profiles/${userId}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to fetch user data');
-          }
-          return response.json();
-        })
-        .then(user => {
-          // Display user data
-          document.getElementById('user-data').innerHTML = `
-            <p><strong>Full Name:</strong> ${user.first_name} ${user.last_name}</p>
-            <p><strong>Email:</strong> ${user.eemail}</p>
-            <p><strong>Country:</strong> ${user.country}</p>
-            <p><strong>Interests:</strong> ${user.interests}</p>
-            <p><strong>Hobbies:</strong> ${user.hobbies}</p>
-            <p><strong>Family Role:</strong> ${user.familyRole}</p>
-          `;
-        })
-        .catch(error => {
-          console.error('Error fetching user data:', error);
-          document.getElementById('user-data').innerHTML = '<p>Failed to load user data!</p>';
-        });
-    }
+if (!userId) {
+  document.getElementById('user-data').innerHTML = '<p>User ID not provided!</p>';
+} else {
+  fetch(`/api/profiles/${userId}`)
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => { throw new Error(text) });
+      }
+      return response.json();
+    })
+    .then(user => {
+      // Handle missing profile picture
+      const profileImage = user.profile.photoURL ? user.profile.photoURL : 'https://via.placeholder.com/150';
+
+      // Convert arrays to lists
+      const interestsList = user.profile.interests.length ? user.profile.interests.map(i => `<li>${i}</li>`).join('') : 'N/A';
+      const hobbiesList = user.profile.hobbies.length ? user.profile.hobbies.map(h => `<li>${h}</li>`).join('') : 'N/A';
+
+      document.getElementById('user-data').innerHTML = `
+        <img src="${profileImage}" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; display: block; margin-bottom: 10px;">
+        <p><strong>Full Name:</strong> ${user.first_name} ${user.last_name}</p>
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p><strong>Country:</strong> ${user.profile.country}</p>
+        <p><strong>Bio:</strong> ${user.profile.bio}</p>
+        <p><strong>Family Role:</strong> ${user.profile.familyRole}</p>
+        <p><strong>Interests:</strong> <ul>${interestsList}</ul></p>
+        <p><strong>Hobbies:</strong> <ul>${hobbiesList}</ul></p>
+        <p><strong>Badges:</strong> ${user.profile.badges.join(', ')}</p>
+      `;
+    })
+    .catch(error => {
+      console.error('Error fetching user data:', error);
+      document.getElementById('user-data').innerHTML = `<p>Failed to load user data! ${error.message}</p>`;
+    });
+}
+
+
   </script>
-</body>
+  </body>
 </html>

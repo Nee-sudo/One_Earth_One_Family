@@ -227,9 +227,10 @@ app.get('/profileList', (req, res) => {
     res.render('profileList');
 });
 app.get('/userProfile', (req, res) => {
-    res.render('userProfilee');
+    res.render('userProfile');                                                  
 });
 app.get('/api/profiles/:id', async (req, res) => {
+    console.log('Request received:', req.params.id);
     try {
         const user = await User.findById(req.params.id).select('-password'); // Exclude password
         if (!user) {
