@@ -465,6 +465,7 @@
                     console.log(user.username);
                     console.log(user.hobbies)
                     console.log(user.email);
+                    console.log(user.photoUrl);
                     const email = user.email;
                     fetchDetails(email);
                 } else {
@@ -505,6 +506,8 @@
                     console.log(result.token);
                     document.getElementById('bio').textContent = result.bio;
                     document.getElementById('country').textContent = result.country;
+                    console.log(result.photoUrl);
+                    document.getElementById('profilePic').src = result.photoUrl;
                     console.log('countryname', result.country);
                     // document.getElementById('interests').textContent = result.interests;
                     // Assuming result.interests is an array of interests

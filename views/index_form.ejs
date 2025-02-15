@@ -71,12 +71,34 @@
         }
 
         .form-group .options button {
-            padding: 5px 10px;
-            font-size: 14px;
-            background-color: #eee;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
+            align-items: center;
+  appearance: none;
+  background-color: #FCFCFD;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #36395A;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "JetBrains Mono",monospace;
+  height: 20px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow,transform;
+  font-size: 10px;
         }
 
         .form-group .options button.selected {
@@ -101,12 +123,126 @@
             background-color: black;
             color: wheat;
         }
+
+
+/* CSS */
+.button-17 {
+  display: inline;
+  display: inline-flex;
+  align-items: center;
+  appearance: none;
+  background-color: #fff;
+  border-radius: 24px;
+  border-style: none;
+  box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+  box-sizing: border-box;
+  color: #3c4043;
+  cursor: pointer;
+  display: inline-flex;
+  fill: currentcolor;
+  font-family: "Google Sans",Roboto,Arial,sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 30px;
+  justify-content: center;
+  letter-spacing: .25px;
+  line-height: normal;
+  max-width: 100%;
+  overflow: visible;
+  padding: 2px 24px;
+  position: relative;
+  text-align: center;
+  text-transform: none;
+  transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezier(0, 0, .2, 1) 0ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: auto;
+  will-change: transform,opacity;
+  z-index: 0;
+}
+
+.button-17:hover {
+  background: #F6F9FE;
+  color: #174ea6;
+}
+
+.button-17:active {
+  box-shadow: 0 4px 4px 0 rgb(60 64 67 / 30%), 0 8px 12px 6px rgb(60 64 67 / 15%);
+  outline: none;
+}
+
+.button-17:focus {
+  outline: none;
+  border: 2px solid #4285f4;
+}
+
+.button-17:not(:disabled) {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+.button-17:not(:disabled):hover {
+  box-shadow: rgba(60, 64, 67, .3) 0 2px 3px 0, rgba(60, 64, 67, .15) 0 6px 10px 4px;
+}
+
+.button-17:not(:disabled):focus {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+.button-17:not(:disabled):active {
+  box-shadow: rgba(60, 64, 67, .3) 0 4px 4px 0, rgba(60, 64, 67, .15) 0 8px 12px 6px;
+}
+
+.button-17:disabled {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+.profile-image {
+    display: block;
+    margin: 0 auto 10px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #ccc;
+    transition: border-color 0.3s;
+}
+
+.profile-image:hover {
+    border-color: #4CAF50;
+}
     </style>
 </head>
 
 <body>
     <div class="form-container">
         <!-- <h2>Create Your Profile</h2> -->
+        <form action="/upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+            <label for="profile-photo" class="form-group">Profile Photo:</label>
+            <input type="file" name="file" id="fileInput" required style="display: none;">
+            <img src="https://img.icons8.com/?size=100&id=7211&format=png" alt="" onclick="document.getElementById('fileInput').click();" class="profile-image" id="profileImage">
+         </input>
+        <img id="imagePreview" src="" alt="Image Preview" class="profile-image" style="display: none;">
+        <script>
+            document.getElementById('fileInput').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    document.getElementById('profileImage').style.display = 'none';
+                    // document.getElementById('').style.display = 'none';
+                    reader.onload = function(e) {
+                        const imagePreview = document.getElementById('imagePreview');
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        </script>
+           <center>
+            <button type="submit" class="button-17">Save</button>
+           </center>
+        </form>
         <form id="profile-form" enctype="multipart/form-data">
             <div class="form-group" style="display: none;">
                 <label for="profile-photo">Profile Photo:</label>
@@ -227,12 +363,12 @@
             // Form submission handler
             form.addEventListener('submit', async (event) => {
                 event.preventDefault(); // Prevent default form submission
-                const profilePhotoInput = document.getElementById('profilePhoto');
-                const profilePhoto = profilePhotoInput.files[0];
+                // const profilePhotoInput = document.getElementById('profilePhoto');
+                // const profilePhoto = profilePhotoInput.files[0];
 
                 // Collect data from the form
                 const formData = new FormData(form);
-                formData.append('profilePhoto', profilePhoto);
+                // formData.append('profilePhoto', profilePhoto);
                 const data = Object.fromEntries(formData.entries());
 
 
@@ -311,6 +447,50 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const token = localStorage.getItem('jwt');
+
+            if (!token) {
+                console.error('Token missing.');
+                return;
+            }
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Upload successful:', data);
+                        document.getElementsByClassName('button-17')[0].innerText = 'Saved';
+                        // Handle success
+                    } else {
+                        console.error('Upload failed:', await response.json());
+                        // Handle error
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            } else {
+                console.error('No file selected.');
+            }
+        });
+    });
 
     </script>
 </body>

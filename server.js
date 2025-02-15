@@ -53,13 +53,31 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // API to Upload Image
-app.post("/upload", upload.single("file"), (req, res) => {
+app.post("/upload", authenticateJWT, upload.single("file"), async (req, res) => {
     console.log('Request received:', req.file);
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-    const imageUrl = `/img/${req.file.filename}`; // Public URL path
-    res.json({ imageUrl }); // Send image URL as response
-    console.log('Image uploaded successfully:', imageUrl);
+    try {
+        const sanitizedFilename = req.file.filename.replace(/[^a-zA-Z0-9.-]/g, "_");
+        const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+        req.imageUrl = `${baseUrl}/img/${sanitizedFilename}`;
+        console.log('Image uploaded successfully:', req.imageUrl);
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user.id,
+            { 'profile.photoUrl': req.imageUrl },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.json({ imageUrl: req.imageUrl }); // Move this line to the end of the success case
+    } catch (error) {
+        console.error('Error updating photoUrl:', error.message);
+        res.status(500).json({ message: 'Internal server error.', error: error.message });
+    }
 });
 
 // Session Setup
@@ -214,6 +232,8 @@ app.get('/api/user', authenticateJWT, async (req, res) => {
             interests: user.profile?.interests || 'Not provided',
             hobbies: user.profile?.hobbies || 'Not provided',
             familyRole: user.profile?.familyRole || 'Not provided',
+            badges: user.profile?.badges || 'Not provided',
+            photoUrl: user.profile?.photoUrl || 'Not provided'
         });
         console.log("loaded  user data", user);
     } catch (error) {
@@ -285,27 +305,31 @@ app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req,
         const parsedHobbies = typeof hobbies === 'string' ? JSON.parse(hobbies) : hobbies;
         const parsedInterests = typeof interests === 'string' ? JSON.parse(interests) : interests;
 
+        let photoUrl = req.body.existingPhotoUrl; // Retain existing URL if no new upload
+        if (req.file) { // If a new file was uploaded
+            const sanitizedFilename = req.file.filename.replace(/[^a-zA-Z0-9.-]/g, "_");
+            const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+            photoUrl = `${baseUrl}/img/${sanitizedFilename}`;
+            console.log("photo url", photoUrl);
+        }
 
-        // const photoPath = req.file?.path; // Access the uploaded photo's file path
-        // console.log('Path received',photoPath);
-        // Ensure required fields are present
         if (!bio || !country || !familyRole) {
             return res.status(400).json({ message: 'Missing required fields: bio, country, or familyRole.' });
         }
         if (!req.user?.id) {
             return res.status(401).json({ message: 'Unauthorized access. User ID is missing.' });
         }
-        // Update user profile, including photoPath
+
         const updatedUser = await User.findByIdAndUpdate(
             req.user.id,
             {
-                'profile.bio': bio,
-                'profile.country': country,
-                'profile.interests': Array.isArray(parsedInterests) ? parsedInterests : [],
-                'profile.hobbies': Array.isArray(parsedHobbies) ? parsedHobbies : [],
-                'profile.familyRole': familyRole,
-                'profile.badges': Array.isArray(badges) ? badges : [],
-                // 'profile.photo': photoPath, // Save the file path in the database
+            'profile.bio': bio,
+            'profile.country': country,
+            'profile.interests': Array.isArray(parsedInterests) ? parsedInterests : [],
+            'profile.hobbies': Array.isArray(parsedHobbies) ? parsedHobbies : [],
+            'profile.familyRole': familyRole,
+            'profile.badges': Array.isArray(badges) ? badges : [],
+            // 'profile.photoUrl': global.imageUrl, // Store the global image URL here
             },
             { new: true, runValidators: true }
         ).select('-password');
@@ -314,7 +338,6 @@ app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req,
             return res.status(404).json({ message: 'User not found.' });
         }
 
-        // Generate a new JWT with updated profile information
         const token = jwt.sign(
             {
                 userId: updatedUser._id,
@@ -404,6 +427,8 @@ app.post('/api/loginn', async (req, res) => {
             interests: user.profile?.interests || 'Not provided',
             hobbies: user.profile?.hobbies || 'Not provided',
             familyRole: user.profile?.familyRole || 'Not provided',
+            badges: user.profile?.badges || 'Not provided',
+            photoUrl: user.profile?.photoUrl || 'Not provided'
         };
 
         // Generate JWT
@@ -422,7 +447,9 @@ app.post('/api/loginn', async (req, res) => {
             hobbies: user.profile.hobbies,
             country: user.profile?.country || 'Not provided',
             interests: user.profile?.interests || 'Not provided',
-            familyRole: user.profile?.familyRole || 'Not provided'
+            familyRole: user.profile?.familyRole || 'Not provided',
+            badges: user.profile?.badges || 'Not provided',
+            photoUrl: user.profile?.photoUrl || 'Not provided'
         });
     } catch (error) {
         console.error('Error during data fetching:', error);

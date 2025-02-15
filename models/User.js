@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         hobbies: { type: [String], default: [] },   // Changed from String to Array
         familyRole: { type: String, default: '' },
         badges: { type: [String], default: [] },
-        photoURL: { type: String, default: '' },
+        photoUrl: { type: String, default: 'Url not found' },
     }
 });
 
