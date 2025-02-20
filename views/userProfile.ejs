@@ -121,6 +121,10 @@
                     <h6 class="mb-0">Badges</h6>
                     <span id="badges">Loading...</span>
                 </div>
+                <div class="stats mt-3">
+                    <h6 class="mb-0">Bio</h6>
+                    <span id="bio">Loading...</span>
+                </div>
             </div>
         </div>
     </div>
@@ -169,6 +173,10 @@
                 document.getElementById("badges").innerText = user.profile.badges.length 
                     ? user.profile.badges.join(", ") 
                     : "No Badges";
+                // bio
+                document.getElementById("bio").innerText = user.profile.bio;
+                //profile image
+                document.getElementById("profileImage").src = user.profile.photoUrl;
             })
             .catch(error => {
                 console.error("Error fetching user data:", error);
