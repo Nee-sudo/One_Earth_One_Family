@@ -59,11 +59,13 @@
                     localStorage.setItem('jwt', result.token); // Store JWT securely
                     window.location.href = '/dashboards'; // Redirect to dashboard
                 } else {
-                    document.getElementById('login-message').textContent = result.message;
+                                // Display alert with the error message from the server
+                    alert(result.message); // Use alert() here
+
                 }
             } catch (error) {
                 console.error('Error during login:', error);
-                document.getElementById('login-message').textContent = 'An error occurred. Please try again.';
+                alert('An error occurred. Please try again.'); // Use alert() here as well
             }
         });
     </script>
