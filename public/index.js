@@ -1,3 +1,6 @@
+  // Define userList
+  const userList = document.getElementById('userList');
+  const userCard = document.getElementById('userCard')
   // Fetch the user list from the API
   fetch('/api/profiles')
   .then(response => {
@@ -7,7 +10,9 @@
     return response.json();
   })
   .then(users => {
+    console.log("user1",users);
     users.forEach(user => {
+      console.log("user1",user);
       const onclick = document.getElementById('onclick');
       console.log(user);
       // Add click event to redirect to the userProfile page with user ID
@@ -23,26 +28,4 @@
 
   console.log('index.js loaded');
 
-  try{
-    const jwt = localStorage.getItem('jwt');
-    if(jwt){
-      console.log('jwt found');
-      const loginElement = document.getElementById('login');
-      const LoginElement = document.getElementById('Login');
-      document.getElementById('signup').style.display= 'none';
-      document.getElementById('Signup').style.display= 'none';
-      if (loginElement) {
-        loginElement.innerText = 'Profile';
-        LoginElement.innerText = 'Profile';
-        loginElement.setAttribute('href', '/dashboards');
-        LoginElement.setAttribute('href', '/dashboards');           
-      } else {
-        console.error('Element with ID "login" not found');
-      }
-    } else {
-      console.log('jwt not found');
-    }
-  } catch (error) {
-    console.error('Error accessing localStorage:', error);
-  }
-  
+ 
