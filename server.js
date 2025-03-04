@@ -16,8 +16,8 @@ const multer = require('multer');
 
 // Constants
 const PORT = process.env.PORT || 4000;
-const MONGO_URI = process.env.MONGO_URI || '';
-const SECRET_KEY = process.env.SECRET_KEY || 'default_secret';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://neer:bjFBXFCYd00Gifiv@pdf-uploading-site.ges8oic.mongodb.net/?retryWrites=true&w=majority';
+const SECRET_KEY = process.env.SECRET_KEY || '12345';
 
 // Models
 const User = require('./models/User');
