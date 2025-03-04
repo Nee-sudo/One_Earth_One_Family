@@ -13,14 +13,30 @@
       console.log("user1", users);
       users.forEach(user => {
         console.log("user1", user);
-        
         // Create a new user card element
         const userCard = document.createElement('div');
-        userCard.className = 'user-card';
+        userCard.className = 'col-lg-3 col-md-6 d-flex align-items-stretch';
+        userCard.setAttribute('data-aos', 'fade-up');
+        userCard.setAttribute('data-aos-delay', '700');
         userCard.innerHTML = `
-          <h2>${user.name}</h2>
-          <p>${user.email}</p>
-          <button id="onclick-${user.id}">View Profile</button>
+          <div class="team-member">
+            <div class="member-img">
+            <img src="assets/img/team/eric.jpg" class="img-fluid" alt="">
+              // <img src="assets/img/team/${user.image}" class="img-fluid" alt="">
+              <div class="social">
+          <a href="#"><i class="bi bi-twitter"></i></a>
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-linkedin"></i></a>
+              </div>
+            </div>
+            <div class="member-info">
+              <h4>${user.name}</h4>
+              <span>${user.role}</span>
+              <p>${user.description}</p>
+              <button id="onclick-${user.id}">View Profile</button>
+            </div>
+          </div>
         `;
         
         // Add click event to redirect to the userProfile page with user ID
