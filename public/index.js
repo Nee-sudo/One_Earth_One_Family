@@ -21,8 +21,7 @@
         userCard.innerHTML = `
           <div class="team-member">
             <div class="member-img">
-            <img src="assets/img/team/eric.jpg" class="img-fluid" alt="">
-              // <img src="assets/img/team/${user.image}" class="img-fluid" alt="">
+            <img src="assets/img/team/${user.image}.jpg" class="img-fluid" alt="">
               <div class="social">
           <a href="#"><i class="bi bi-twitter"></i></a>
           <a href="#"><i class="bi bi-facebook"></i></a>
@@ -31,9 +30,10 @@
               </div>
             </div>
             <div class="member-info">
-              <h4>${user.name}</h4>
-              <span>${user.role}</span>
-              <p>${user.description}</p>
+              <h4>${user.first_name}</h4>
+              <span>${user.familyRole}</span>
+              <span>Member from ${user.country}</span>
+              <p>${user.bio}</p>
               <button id="onclick-${user.id}">View Profile</button>
             </div>
           </div>

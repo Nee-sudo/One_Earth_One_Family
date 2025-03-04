@@ -282,7 +282,9 @@ app.get('/api/profiles', async (req, res) => {
             country: user.profile?.country || 'Not provided',
             interests: user.profile?.interests || 'Not provided',
             hobbies: user.profile?.hobbies || 'Not provided',
+            bio: user.profile?.bio || 'Not provided',
             familyRole: user.profile?.familyRole || 'Not provided',
+            image:user.profile?.photoUrl || 'Not provided'
         }));
 
         // Send the response
