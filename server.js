@@ -43,7 +43,7 @@ app.use(cors());
 // Storage Setup (Uploads to "public/images/")
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "public/img/"); // Save files in 'public/images/'
+        cb(null, "public/assets/img/team"); // Save files in 'public/images/'
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
@@ -59,8 +59,8 @@ app.post("/upload", authenticateJWT, upload.single("file"), async (req, res) => 
 
     try {
         const sanitizedFilename = req.file.filename.replace(/[^a-zA-Z0-9.-]/g, "_");
-        const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
-        req.imageUrl = `${baseUrl}/img/${sanitizedFilename}`;
+        // const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+        req.imageUrl = `assets/img/team/${sanitizedFilename}`;
         console.log('Image uploaded successfully:', req.imageUrl);
 
         const updatedUser = await User.findByIdAndUpdate(
@@ -310,8 +310,8 @@ app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req,
         let photoUrl = req.body.existingPhotoUrl; // Retain existing URL if no new upload
         if (req.file) { // If a new file was uploaded
             const sanitizedFilename = req.file.filename.replace(/[^a-zA-Z0-9.-]/g, "_");
-            const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
-            photoUrl = `${baseUrl}/img/${sanitizedFilename}`;
+            // const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+            photoUrl = `assets/img/team/${sanitizedFilename}`;
             console.log("photo url", photoUrl);
         }
 

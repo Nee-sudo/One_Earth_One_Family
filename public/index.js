@@ -21,7 +21,7 @@
         userCard.innerHTML = `
           <div class="team-member">
             <div class="member-img">
-            <img src="assets/img/team/${user.image}.jpg" class="img-fluid" alt="">
+            <img src="${user.image}" class="img-fluid" alt="">
               <div class="social">
           <a href="#"><i class="bi bi-twitter"></i></a>
           <a href="#"><i class="bi bi-facebook"></i></a>
