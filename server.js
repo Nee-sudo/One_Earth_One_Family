@@ -133,6 +133,9 @@ app.get('/editProfile', (req, res) => {
 app.get('/profile', (req, res) => {
     res.render('userProfile');
 });
+app.get('/edit-details', (req, res) => {
+    res.render('edit-details');
+});
 app.post('/api/signup', async (req, res) => {
     try {
         const { first_name, last_name, email, password } = req.body;
@@ -353,6 +356,46 @@ app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req,
 
         res.status(200).json({
             message: 'Profile updated successfully!',
+            profile: updatedUser.profile,
+            token,
+        });
+    } catch (error) {
+        console.error('Error updating profile:', error.message);
+        res.status(500).json({ message: 'Internal server error.', error: error.message });
+    }
+});
+//Edit-profile
+app.post('/edit-profile', authenticateJWT, async (req, res) => {
+    try {
+        console.log('Request received:', req.body);
+        const password = req.body.password;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user.id,
+            {
+                'email': req.body.email,
+                'password': hashedPassword,
+            },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        const token = jwt.sign(
+            {
+                userId: updatedUser._id,
+                username: updatedUser.first_name,
+                email: updatedUser.email,
+                profile: updatedUser.profile,
+            },
+            process.env.SECRET_KEY,
+            { expiresIn: '1h' }
+        );
+
+        res.status(200).json({
+            message: 'Details updated!',
             profile: updatedUser.profile,
             token,
         });
