@@ -85,7 +85,6 @@ app.use(
     session({
         secret: SECRET_KEY,
         resave: false,
-        store: store, // Use MongoDB session store
         saveUninitialized: true,
         cookie: { secure: false }, // Change to true in production with HTTPS
     })
