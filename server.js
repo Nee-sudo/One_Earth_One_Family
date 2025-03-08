@@ -43,7 +43,7 @@ app.use(cors());
 // Storage Setup (Uploads to "public/images/")
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "public/assets/img/team"); // Save files in 'public/images/'
+        cb(null, "/app/public/assets/img/team"); // Save files in 'public/images/'
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
