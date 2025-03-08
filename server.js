@@ -171,7 +171,13 @@ app.post('/api/signup', async (req, res) => {
         await transporter.sendMail({
             to: email,
             subject: 'Verify Your Email',
-            html: `<p>Click <a href="${verificationUrl}">here</a> to verify your account.</p>`,
+            html: `
+            <p>Dear ${first_name},</p>
+            <p>Thank you for registering with One Earth One Family. Please click the button below to verify your email address and complete your registration:</p>
+            <p><a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Verify Email</a></p>
+            <p>If you did not create an account, please ignore this email.</p>
+            <p>Best regards,<br/>The One Earth One Family Team</p>
+            `,
         });
 
         res.status(201).json({ message: 'User registered. Verification email sent.' });
