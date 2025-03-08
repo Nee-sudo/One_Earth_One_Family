@@ -54,3 +54,51 @@
     });
 
   console.log('index.js loaded');
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const jwtToken = localStorage.getItem('jwt');
+        const signupLinks = document.querySelectorAll('a[href="/signup"]'); // Select all signup links
+        const loginLinks = document.querySelectorAll('a[href="/login"]'); // Select all login links
+
+        console.log('JWT Token:', jwtToken);
+
+        if (jwtToken) {
+            // User is logged in
+            console.log('User is logged in.');
+
+            loginLinks.forEach(loginLink => {
+                console.log('Changing Login to Logout.');
+                loginLink.textContent = 'Logout';
+                loginLink.href = '#';
+                loginLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    localStorage.removeItem('jwt');
+                    console.log('JWT removed, logging out.');
+                    window.location.reload();
+                });
+            });
+
+            signupLinks.forEach(signupLink => {
+                console.log('Changing Signup to Dashboards.');
+                signupLink.textContent = 'Dashboards';
+                signupLink.href = '/dashboards';
+            });
+
+        } else {
+            // User is logged out
+            console.log('User is logged out.');
+
+            loginLinks.forEach(loginLink => {
+                console.log('Ensuring Login link is correct.');
+                loginLink.textContent = 'Login';
+                loginLink.href = '/login';
+            });
+
+            signupLinks.forEach(signupLink => {
+                console.log('Ensuring Signup link is correct.');
+                signupLink.textContent = 'Signup';
+                signupLink.href = '/signup';
+            });
+        }
+    });
