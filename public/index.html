@@ -482,8 +482,120 @@
 
         </div>
         <div class="row gy-4" id="userList"></div>
-    
       </div>
+      <section>
+        <div class="alert alert-warning text-center" role="alert">
+          This section is under development. Stay tuned for updates!
+        </div>
+        <div class="search-bar-container text-center my-4">
+          <button id="expand-search-bar" class="btn btn-primary btn-lg px-4 py-2">Post Your Thought</button>
+          <div id="search-bar" class="d-none mt-3">
+            <textarea class="form-control mb-3" id="thought-input" rows="3" placeholder="Write your thought..." style="resize: none; border-radius: 10px;"></textarea>
+            <div class="d-flex justify-content-center gap-3">
+              <button id="post-thought" class="btn btn-success btn-lg px-4 py-2">Post</button>
+              <button id="cancel-thought" class="btn btn-danger btn-lg px-4 py-2">Cancel</button>
+            </div>
+          </div>
+        </div>
+      
+        <div class="container" id="thoughts-section">
+          <h2>Thoughts & Quotes</h2>
+          <div class="row gy-4"></div>
+        </div>
+      </section>
+      
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const expandButton = document.getElementById('expand-search-bar');
+          const searchBar = document.getElementById('search-bar');
+          const postButton = document.getElementById('post-thought');
+          const cancelButton = document.getElementById('cancel-thought');
+          const thoughtInput = document.getElementById('thought-input');
+          const thoughtsSection = document.querySelector('#thoughts-section .row');
+      
+          expandButton.addEventListener('click', () => {
+            searchBar.classList.remove('d-none');
+            expandButton.classList.add('d-none');
+          });
+      
+          cancelButton.addEventListener('click', () => {
+            searchBar.classList.add('d-none');
+            expandButton.classList.remove('d-none');
+            thoughtInput.value = '';
+          });
+      
+          postButton.addEventListener('click', () => {
+            const thoughtText = thoughtInput.value.trim();
+            if (thoughtText) {
+              const newCard = document.createElement('div');
+              newCard.classList.add('col-lg-4', 'col-md-6');
+              newCard.innerHTML = `
+                <div class="card">
+                  <div class="card-header d-flex align-items-center">
+                    <img src="assets/img/team/neer.jpg" alt="User Profile" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+                    <h5 class="mb-0">Anonymous User</h5>
+                  </div>
+                  <div class="card-body">
+                    <p>${thoughtText}</p>
+                    <div class="d-flex justify-content-between">
+                      <button class="btn btn-light like-btn"><i class="bi bi-hand-thumbs-up"></i> Like <span class="like-count">0</span></button>
+                      <button class="btn btn-light comment-btn"><i class="bi bi-chat"></i> Comment <span class="comment-count">0</span></button>
+                    </div>
+                    <div class="comment-section mt-3" style="display: none;">
+                      <ul class="list-unstyled mt-2 comment-list"></ul>
+                      <textarea class="form-control mb-2 comment-input" rows="2" placeholder="Write a comment..."></textarea>
+                      <button class="btn btn-primary btn-sm post-comment-btn">Post Comment</button>
+                      <button class="btn btn-danger btn-sm close-comment-btn">Close Comments</button>
+                    </div>
+                  </div>
+                </div>
+              `;
+              thoughtsSection.appendChild(newCard);
+              thoughtInput.value = '';
+              searchBar.classList.add('d-none');
+              expandButton.classList.remove('d-none');
+      
+              attachEventListeners(newCard);
+            }
+          });
+        });
+      
+        function attachEventListeners(card) {
+          const likeButton = card.querySelector('.like-btn');
+          const commentButton = card.querySelector('.comment-btn');
+          const postCommentButton = card.querySelector('.post-comment-btn');
+          const closeCommentButton = card.querySelector('.close-comment-btn');
+      
+          likeButton.addEventListener('click', () => {
+            const likeCount = likeButton.querySelector('.like-count');
+            likeCount.textContent = parseInt(likeCount.textContent) + 1;
+          });
+      
+          commentButton.addEventListener('click', () => {
+            const commentSection = card.querySelector('.comment-section');
+            commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
+          });
+      
+          postCommentButton.addEventListener('click', () => {
+            const commentInput = card.querySelector('.comment-input');
+            const commentList = card.querySelector('.comment-list');
+            if (commentInput.value.trim() !== '') {
+              const newComment = document.createElement('li');
+              newComment.textContent = commentInput.value;
+              commentList.appendChild(newComment);
+              commentInput.value = '';
+              const commentCountElement = card.querySelector('.comment-count');
+              commentCountElement.textContent = commentList.children.length;
+            }
+          });
+      
+          closeCommentButton.addEventListener('click', () => {
+            const commentSection = card.querySelector('.comment-section');
+            commentSection.style.display = 'none';
+          });
+        }
+      </script>
+      
     
     </section>
     
