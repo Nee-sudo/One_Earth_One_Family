@@ -12,7 +12,12 @@ const cors = require('cors');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
-
+const router = express.Router();
+// App Setup
+const app = express();
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(cors());
 
 // Constants
 const PORT = process.env.PORT || 4000;
@@ -22,9 +27,10 @@ const SECRET_KEY = process.env.SECRET_KEY || '';
 // Models
 const User = require('./models/User');
 // const Member = require('./models/Profiles');
-
-// App Setup
-const app = express();
+const Thought = require('./models/Thought');
+const authenticateJWT = require('./middleware/authenticateJWT');
+const thoughtsRoutes = require('./routes/thoughts');
+app.use('/api', thoughtsRoutes);
 //set engine
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -35,10 +41,6 @@ app.use(express.static('public copy'));
 app.use('/uploads', express.static('static/uploads'));
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(cors());
 
 // Storage Setup (Uploads to "public/images/")
 const storage = multer.diskStorage({
@@ -95,20 +97,6 @@ mongoose
     .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Database connection error:', err));
-
-// Middleware for JWT Authentication
-function authenticateJWT(req, res, next) {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ message: 'Unauthorized: Token missing' });
-
-    try {
-        const decoded = jwt.verify(token, SECRET_KEY);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        return res.status(403).json({ message: 'Invalid or expired token' });
-    }
-}
 
 app.get('/signup', (req, res) => {
     res.render('signup');
