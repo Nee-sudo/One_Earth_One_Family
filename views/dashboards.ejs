@@ -332,7 +332,12 @@
                                 <a class="nav-link" id="profile-tab" data-toggle="tab" href="/edit-details" role="tab"
                                     aria-controls="profile" aria-selected="false">Edit Details</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="your-post-tab" role="tab" aria-controls="your-post" aria-selected="false"
+                                    onclick="loadUserPosts()">Your Posts</a>
+                            </li>
                         </ul>
+                        
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -340,6 +345,11 @@
                         onclick="window.location.href='/editProfile';" /> <br>
                 </div>
             </div>
+            <div class="your-post">
+                <h4>Post Count: <span id="post-count">0</span></h4>
+                <div id="user-posts" class="row"></div> 
+            </div>
+            
             <div class="row">
                 <div class="col-md-4">
                     <div class="profile">
@@ -609,6 +619,129 @@
     }
 }
 console.log('connected')
+
+async function loadUserPosts() {
+    const jwtToken = localStorage.getItem('jwt');
+    if (!jwtToken) {
+        alert("Please log in to view your posts.");
+        return;
+    }
+
+    try {
+        // Fetch user details to get their ID
+        const userResponse = await fetch('/api/user', {
+            headers: { 'Authorization': `Bearer ${jwtToken}` }
+        });
+
+        if (!userResponse.ok) throw new Error("Failed to fetch user data");
+
+        const userData = await userResponse.json();
+        const userId = userData.id; // Extract user ID
+
+        // Now fetch user's thoughts using userId
+        const response = await fetch(`/api/thoughts/user/${userId}`, {
+            headers: { 'Authorization': `Bearer ${jwtToken}` }
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch posts");
+
+        const thoughts = await response.json();
+        document.getElementById('post-count').textContent = thoughts.length; // Update post count
+
+        const postContainer = document.getElementById('user-posts');
+        postContainer.innerHTML = ''; // Clear previous posts
+
+        thoughts.forEach(thought => appendUserPost(thought, postContainer));
+    } catch (error) {
+        console.error('Error loading user posts:', error);
+    }
+}
+
+
+// Function to create a post card
+function appendUserPost(thought, postContainer) {
+    const postCard = document.createElement('div');
+    postCard.classList.add('col-md-6', 'mb-3');
+    postCard.innerHTML = `
+        <div class="card p-3 shadow">
+            <p class="post-text">${thought.text}</p>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-primary edit-post" data-id="${thought._id}">Edit</button>
+                <button class="btn btn-danger delete-post" data-id="${thought._id}">Delete</button>
+            </div>
+        </div>
+    `;
+
+    postContainer.appendChild(postCard);
+
+    // Attach event listeners for edit and delete buttons
+    postCard.querySelector('.edit-post').addEventListener('click', () => editPost(thought._id, postCard));
+    postCard.querySelector('.delete-post').addEventListener('click', () => deletePost(thought._id, postCard));
+}
+
+// Edit post function
+function editPost(postId, postCard) {
+    const postText = postCard.querySelector('.post-text');
+    const editInput = document.createElement('textarea');
+    editInput.value = postText.textContent;
+    editInput.classList.add('form-control', 'mb-2');
+
+    postText.replaceWith(editInput);
+
+    const saveButton = document.createElement('button');
+    saveButton.classList.add('btn', 'btn-success');
+    saveButton.textContent = 'Save';
+    saveButton.addEventListener('click', async (event) => {
+        event.preventDefault(); // Prevent default behavior
+        const newText = editInput.value.trim();
+        if (!newText) return;
+
+        const jwtToken = localStorage.getItem('jwt');
+        try {
+            const response = await fetch(`/api/thoughts/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`
+                },
+                body: JSON.stringify({ text: newText })
+            });
+
+            if (response.ok) {
+                postText.textContent = newText;
+                editInput.replaceWith(postText);
+                saveButton.remove();
+            }
+        } catch (error) {
+            console.error('Error updating post:', error);
+        }
+    });
+
+    postCard.appendChild(saveButton);
+}
+
+// Delete post function
+async function deletePost(postId, postCard) {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    const jwtToken = localStorage.getItem('jwt');
+    try {
+        const response = await fetch(`/api/thoughts/${postId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${jwtToken}` }
+        });
+
+        if (response.ok) {
+            postCard.remove();
+            const postCountElement = document.getElementById('post-count');
+            postCountElement.textContent = parseInt(postCountElement.textContent) - 1;
+        }
+    } catch (error) {
+        console.error('Error deleting post:', error);
+    }
+}
+
+
     </script>
 </body>
 

@@ -117,5 +117,54 @@ router.post('/thoughts/:id/comment', authenticateJWT, async (req, res) => {
     }
 });
 
+router.get('/thoughts/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const thoughts = await Thought.find({ user: userId }).sort({ createdAt: -1 });
+
+        if (!thoughts.length) {
+            return res.status(404).json({ message: "No posts found for this user." });
+        }
+
+        res.json(thoughts);
+    } catch (error) {
+        console.error('Error fetching user posts:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
+router.put('/thoughts/:id', authenticateJWT, async (req, res) => {
+    try {
+        const { text } = req.body;
+        const thought = await Thought.findOneAndUpdate(
+            { _id: req.params.id, user: req.user.id }, // Ensure only the author can edit
+            { text },
+            { new: true }
+        );
+
+        if (!thought) return res.status(404).json({ message: 'Thought not found or unauthorized' });
+
+        res.json(thought);
+    } catch (error) {
+        console.error('Error updating thought:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.delete('/thoughts/:id', authenticateJWT, async (req, res) => {
+    try {
+        const thought = await Thought.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+
+        if (!thought) return res.status(404).json({ message: 'Thought not found or unauthorized' });
+
+        res.json({ message: 'Thought deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting thought:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
 
 module.exports = router;
