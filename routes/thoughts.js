@@ -10,14 +10,23 @@ router.post('/thoughts', authenticateJWT, async (req, res) => {
 
     try {
         const { text } = req.body;
+
+        console.log("User Image in backend:", req.user.profile?.photoUrl);
+
         if (!text) return res.status(400).json({ message: 'Thought text is required' });
 
         const thought = new Thought({
             text,
             user: req.user.id,
             username: req.user.username,
-            userImage: req.user.profile?.photoUrl || 'assets/img/default.jpg',
+            userImage: req.user.userImage || 'assets/img/default.jpg',
         });
+
+        await thought.save();
+
+        // Fetch the thought back from the database to verify
+        const fetchedThought = await Thought.findById(thought._id);
+        console.log("Fetched Thought from DB:", fetchedThought);
 
         await thought.save();
         res.status(201).json(thought);

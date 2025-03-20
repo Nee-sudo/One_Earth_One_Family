@@ -190,7 +190,17 @@ app.get('/api/verify/:token', async (req, res) => {
         await user.save();
 
         // Generate JWT
-        const jwtToken = jwt.sign({ id: user._id, username: user.first_name, email: user.email, profile: user.profile }, SECRET_KEY, { expiresIn: '1h' });
+        const jwtToken = jwt.sign(
+            { 
+            id: user._id, 
+            username: user.first_name, 
+            email: user.email, 
+            profile: user.profile, 
+            userImage: user.profile?.photoUrl || 'Not provided' 
+            }, 
+            SECRET_KEY, 
+            { expiresIn: '1h' }
+        );
         res.redirect(`/dashboards?token=${jwtToken}`);
 
     } catch (error) {
@@ -232,7 +242,7 @@ app.get('/api/user', authenticateJWT, async (req, res) => {
             badges: user.profile?.badges || 'Not provided',
             photoUrl: user.profile?.photoUrl || 'Not provided'
         });
-        console.log("loaded  user data", user);
+        console.log("loaded  user data loaded", user);
     } catch (error) {
         console.error('Error in /api/user:', error);
         res.status(500).json({ message: 'Failed to fetch user data' });
@@ -286,7 +296,7 @@ app.get('/api/profiles', async (req, res) => {
 
         // Send the response
         res.json(userList);
-        console.log('User list loaded successfully for homepage:', userList);
+        console.log('User list loaded successfully for homepage:');
     } catch (error) {
         console.error('Error in /api/profiles:', error);
         res.status(500).json({ message: 'Failed to fetch user data' });
@@ -299,8 +309,8 @@ app.get('/api/profiles', async (req, res) => {
 app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req, res) => {
     try {
         const { bio, country, interests, hobbies, familyRole, badges } = req.body;
-        console.log('Type of hobbies:', typeof hobbies, hobbies);
-        console.log('Type of interests:', typeof interests, interests);
+        // console.log('Type of hobbies:', typeof hobbies, hobbies);
+        // console.log('Type of interests:', typeof interests, interests);
         const parsedHobbies = typeof hobbies === 'string' ? JSON.parse(hobbies) : hobbies;
         const parsedInterests = typeof interests === 'string' ? JSON.parse(interests) : interests;
 
@@ -343,6 +353,7 @@ app.post('/submit-profile', authenticateJWT, upload.single('Photo'), async (req,
                 username: updatedUser.first_name,
                 email: updatedUser.email,
                 profile: updatedUser.profile,
+                
             },
             process.env.SECRET_KEY,
             { expiresIn: '1h' }
@@ -426,7 +437,7 @@ app.post('/api/login', async (req, res) => {
 
         // Generate JWT
         const token = jwt.sign(
-            { id: user._id, username: user.first_name, email: user.email },
+            { id: user._id, username: user.first_name, email: user.email ,userImage: user.profile?.photoUrl },
             SECRET_KEY,
             { expiresIn: '1h' } // Token expires in 1 hour
         );
@@ -472,14 +483,20 @@ app.post('/api/loginn', async (req, res) => {
 
         // Generate JWT
         const token = jwt.sign(
-            { userId: user._id, username: 'eeraj', email: user.email, hobbies: user.profile.hobbies },
+            {
+                id: user._id,
+                username: user.first_name,
+                email: user.email,
+                userImage: user.profile?.photoUrl || 'assets/img/default.jpg' // Store image
+            },
             SECRET_KEY,
-            { expiresIn: '1h' } // Token expires in 1 hour
+            { expiresIn: '1h' }
         );
-        console.log("toke details", token);
+        
+        // console.log("toke details", token);
         // res.json( { userId: user._id, username: 'eeraj', email: user.email ,hobbies:user.profile.hobbies });
         const hobbies = user.profile.hobbies;
-        console.log(hobbies);
+        // console.log(hobbies);
         res.status(200).json({
             token, message: 'Details fetched done!',
             bio: user.profile?.bio || 'Not provided',

@@ -10,9 +10,9 @@
       return response.json();
     })
     .then(users => {
-      console.log("user1", users);
+      // console.log("user1", users);
       users.forEach(user => {
-        console.log("user1", user);
+        // console.log("user1", user);
         // Create a new user card element
         const userCard = document.createElement('div');
         userCard.className = 'col-lg-3 col-md-6 d-flex align-items-stretch';
@@ -61,7 +61,7 @@
         const signupLinks = document.querySelectorAll('a[href="/signup"]'); // Select all signup links
         const loginLinks = document.querySelectorAll('a[href="/login"]'); // Select all login links
 
-        console.log('JWT Token:', jwtToken);
+        // console.log('JWT Token:', jwtToken);
 
         if (jwtToken) {
             // User is logged in
