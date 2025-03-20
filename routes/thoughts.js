@@ -37,12 +37,32 @@ router.post('/thoughts', authenticateJWT, async (req, res) => {
 });
 
 
-
-
 // Get all thoughts
 router.get('/thoughts', async (req, res) => {
     try {
         const thoughts = await Thought.find().sort({ createdAt: -1 });
+        res.json(thoughts);
+    } catch (error) {
+        console.error('Error fetching thoughts:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+// Fetch Comments for a Thought
+router.get('/thoughts/:id/comments', async (req, res) => {
+    try {
+        const thought = await Thought.findById(req.params.id);
+        if (!thought) return res.status(404).json({ message: 'Thought not found' });
+
+        res.json(thought.comments);
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+// Get all thoughts by a user
+router.get('/thoughts/user/:id', async (req, res) => {
+    try {
+        const thoughts = await Thought.find({ user: req.params.id }).sort({ createdAt: -1 });
         res.json(thoughts);
     } catch (error) {
         console.error('Error fetching thoughts:', error);
