@@ -620,7 +620,7 @@
 }
 console.log('connected')
 
-async function loadUserPosts() {
+async function loadUserPosts() {  // ✅ Fixed `async` keyword
     const jwtToken = localStorage.getItem('jwt');
     if (!jwtToken) {
         alert("Please log in to view your posts.");
@@ -636,7 +636,7 @@ async function loadUserPosts() {
         if (!userResponse.ok) throw new Error("Failed to fetch user data");
 
         const userData = await userResponse.json();
-        const userId = userData.id; // Extract user ID
+        const userId = userData.id; // ✅ Extract user ID correctly
 
         // Now fetch user's thoughts using userId
         const response = await fetch(`/api/thoughts/user/${userId}`, {
@@ -646,17 +646,16 @@ async function loadUserPosts() {
         if (!response.ok) throw new Error("Failed to fetch posts");
 
         const thoughts = await response.json();
-        document.getElementById('post-count').textContent = thoughts.length; // Update post count
+        document.getElementById('post-count').textContent = thoughts.length; // ✅ Update post count
 
         const postContainer = document.getElementById('user-posts');
-        postContainer.innerHTML = ''; // Clear previous posts
+        postContainer.innerHTML = ''; // ✅ Clear previous posts
 
         thoughts.forEach(thought => appendUserPost(thought, postContainer));
     } catch (error) {
         console.error('Error loading user posts:', error);
     }
 }
-
 
 // Function to create a post card
 function appendUserPost(thought, postContainer) {
@@ -688,11 +687,24 @@ function editPost(postId, postCard) {
 
     postText.replaceWith(editInput);
 
+    const buttonContainer = postCard.querySelector('.d-flex'); // Get button container
+    buttonContainer.innerHTML = ''; // Clear existing buttons
+
     const saveButton = document.createElement('button');
-    saveButton.classList.add('btn', 'btn-success');
+    saveButton.classList.add('btn', 'btn-success', 'mr-2');
     saveButton.textContent = 'Save';
+
+    const cancelButton = document.createElement('button');
+    cancelButton.classList.add('btn', 'btn-secondary');
+    cancelButton.textContent = 'Cancel';
+
+    buttonContainer.appendChild(saveButton);
+    buttonContainer.appendChild(cancelButton);
+
     saveButton.addEventListener('click', async (event) => {
-        event.preventDefault(); // Prevent default behavior
+        event.preventDefault();  // 🔥 Fix: Prevent form submission
+        event.stopPropagation(); // 🔥 Fix: Prevent unwanted bubbling
+
         const newText = editInput.value.trim();
         if (!newText) return;
 
@@ -710,14 +722,31 @@ function editPost(postId, postCard) {
             if (response.ok) {
                 postText.textContent = newText;
                 editInput.replaceWith(postText);
-                saveButton.remove();
+
+                buttonContainer.innerHTML = `
+                    <button class="btn btn-primary edit-post" data-id="${postId}">Edit</button>
+                    <button class="btn btn-danger delete-post" data-id="${postId}">Delete</button>
+                `;
+
+                buttonContainer.querySelector('.edit-post').addEventListener('click', () => editPost(postId, postCard));
+                buttonContainer.querySelector('.delete-post').addEventListener('click', () => deletePost(postId, postCard));
             }
         } catch (error) {
             console.error('Error updating post:', error);
         }
     });
 
-    postCard.appendChild(saveButton);
+    cancelButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        editInput.replaceWith(postText);
+        buttonContainer.innerHTML = `
+            <button class="btn btn-primary edit-post" data-id="${postId}">Edit</button>
+            <button class="btn btn-danger delete-post" data-id="${postId}">Delete</button>
+        `;
+
+        buttonContainer.querySelector('.edit-post').addEventListener('click', () => editPost(postId, postCard));
+        buttonContainer.querySelector('.delete-post').addEventListener('click', () => deletePost(postId, postCard));
+    });
 }
 
 // Delete post function
@@ -734,14 +763,13 @@ async function deletePost(postId, postCard) {
         if (response.ok) {
             postCard.remove();
             const postCountElement = document.getElementById('post-count');
-            postCountElement.textContent = parseInt(postCountElement.textContent) - 1;
+            const newCount = Math.max(0, parseInt(postCountElement.textContent) - 1); // Prevent negative count
+            postCountElement.textContent = newCount;
         }
     } catch (error) {
         console.error('Error deleting post:', error);
     }
 }
-
-
     </script>
 </body>
 
