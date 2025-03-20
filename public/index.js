@@ -34,7 +34,7 @@
               <span>${user.familyRole}</span>
               <span>Member from ${user.country}</span>
               <p>${user.bio}</p>
-              <button id="onclick-${user.id}" class="view-Profile">View Profile</button>
+             <center><button id="onclick-${user.id}" class="view-Profile">View Profile</button></center>
             </div>
           </div>
         `;

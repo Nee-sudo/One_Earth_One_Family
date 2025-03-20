@@ -553,28 +553,94 @@
           Stay tuned for updates!
         </div>
         <section>
-          <div class="search-bar-container text-center my-4 d-none"
-            id="post-thought-container">
-            <button id="expand-search-bar"
-              class="btn btn-primary btn-lg px-4 py-2">Post Your
-              Thought</button>
+          <div class="search-bar-container text-center my-4 d-none" id="post-thought-container">
+            <button id="expand-search-bar" class="btn btn-light btn-lg post-thought-btn">💭 Post Your Thought</button>
             <div id="search-bar" class="d-none mt-3">
-              <textarea class="form-control mb-3" id="thought-input" rows="3"
-                placeholder="Write your thought..."
-                style="resize: none; border-radius: 10px;"></textarea>
+              <textarea class="form-control thought-input" id="thought-input" rows="3" placeholder="What's on your mind?"></textarea>
               <div class="d-flex justify-content-center gap-3">
-                <button id="post-thought"
-                  class="btn btn-success btn-lg px-4 py-2">Post</button>
-                <button id="cancel-thought"
-                  class="btn btn-danger btn-lg px-4 py-2">Cancel</button>
+                <button id="post-thought" class="btn btn-success btn-lg action-btn">🚀 Post</button>
+                <button id="cancel-thought" class="btn btn-danger btn-lg action-btn">❌ Cancel</button>
               </div>
             </div>
           </div>
-
+          
           <div class="container" id="thoughts-section">
-            <h2>Thoughts & Quotes</h2>
+            <h2 class="section-title">💡 Thoughts & Quotes</h2>
             <div class="row gy-4"></div>
           </div>
+          <style>
+            /* Container styling */
+.search-bar-container {
+  background: linear-gradient(135deg, #4b0082, #1e90ff);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.search-bar-container:hover {
+  transform: translateY(-3px);
+}
+
+/* Expand button */
+.post-thought-btn {
+  background-color: #ffffff;
+  color: #4b0082;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.post-thought-btn:hover {
+  background-color: #f5f5f5;
+  transform: scale(1.05);
+}
+
+/* Thought input area */
+.thought-input {
+  width: 100%;
+  resize: none;
+  border-radius: 12px;
+  border: 2px solid #4b0082;
+  padding: 15px;
+  font-size: 1.1rem;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.thought-input:focus {
+  border-color: #1e90ff;
+  box-shadow: 0 0 8px rgba(30, 144, 255, 0.5);
+}
+
+/* Post & Cancel buttons */
+.action-btn {
+  font-weight: bold;
+  border-radius: 12px;
+  padding: 12px 24px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.action-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Section title */
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+          </style>
+          
         </section>
         <script>
         document.addEventListener('DOMContentLoaded', () => {
