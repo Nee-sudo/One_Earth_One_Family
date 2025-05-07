@@ -218,7 +218,7 @@ likeButton.addEventListener('click', () => {
         return;
     }
     const thoughtId = likeButton.getAttribute('data-id');
-    fetch(`/api/thoughts/${thoughtId}/like`, {
+    fetch(`${BACKEND_URL}/api/thoughts/${thoughtId}/like`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${jwtToken}` }
     })
@@ -235,7 +235,7 @@ commentButton.addEventListener('click', () => {
     const thoughtId = commentButton.getAttribute('data-id');
 
     if (commentSection.style.display === 'none' || commentSection.style.display === '') {
-        fetch(`/api/thoughts/${thoughtId}/comments`)
+        fetch(`${BACKEND_URL}/api/thoughts/${thoughtId}/comments`)
             .then(response => response.json())
             .then(comments => {
                 commentList.innerHTML = ''; 
@@ -258,7 +258,7 @@ postCommentButton.addEventListener('click', () => {
     const thoughtId = commentButton.getAttribute('data-id');
     const commentText = commentInput.value.trim();
     if (commentText) {
-        fetch(`/api/thoughts/${thoughtId}/comment`, {
+        fetch(`${BACKEND_URL}/api/thoughts/${thoughtId}/comment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
