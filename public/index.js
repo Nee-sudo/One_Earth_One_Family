@@ -103,3 +103,183 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Function to handle the search functionality
+document.addEventListener('DOMContentLoaded', () => {
+const jwtToken = localStorage.getItem('jwt');
+const expandButtonContainer = document.getElementById('post-thought-container');
+const expandButton = document.getElementById('expand-search-bar');
+const searchBar = document.getElementById('search-bar');
+const postButton = document.getElementById('post-thought');
+const cancelButton = document.getElementById('cancel-thought');
+const thoughtInput = document.getElementById('thought-input');
+const thoughtsSection = document.querySelector('#thoughts-section .row');
+
+if (jwtToken) {
+    expandButtonContainer.classList.remove('d-none');
+}
+
+expandButton.addEventListener('click', () => {
+    searchBar.classList.remove('d-none');
+    expandButton.classList.add('d-none');
+});
+
+cancelButton.addEventListener('click', () => {
+    searchBar.classList.add('d-none');
+    expandButton.classList.remove('d-none');
+    thoughtInput.value = '';
+});
+
+postButton.addEventListener('click', () => {
+    if (!jwtToken) {
+        alert('Please login or signup to post your thought.');
+        return;
+    }
+    const thoughtText = thoughtInput.value.trim();
+    if (thoughtText) {
+        fetch('/api/thoughts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({ text: thoughtText })
+        })
+        .then(response => response.json())
+        .then(data => {
+            appendThoughtCard(data);
+            thoughtInput.value = '';
+            searchBar.classList.add('d-none');
+            expandButton.classList.remove('d-none');
+        })
+        .catch(error => console.error('Error posting thought:', error));
+    }
+});
+
+// Load thoughts on page load
+loadAllThoughts();
+});
+
+// Function to fetch and display all thoughts
+function loadAllThoughts() {
+fetch('/api/thoughts')
+.then(response => response.json())
+.then(thoughts => {
+    thoughts.forEach(thought => appendThoughtCard(thought));
+})
+.catch(error => console.error('Error fetching thoughts:', error));
+}
+
+// Function to display thoughts
+function appendThoughtCard(thought) {
+console.log('User Image:', thought.userImage);
+const newCard = document.createElement('div');
+newCard.classList.add('col-lg-4', 'col-md-6');
+newCard.innerHTML = `
+    <div class="card">
+        <div class="card-header d-flex align-items-center">
+            <img src="${thought.userImage || 'assets/img/default.jpg'}" alt="User Profile" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+            <h5 class="mb-0">${thought.username || 'Anonymous'}</h5>
+        </div>
+        <div class="card-body">
+            <p>${thought.text}</p>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-light like-btn" data-id="${thought._id}"><i class="bi bi-hand-thumbs-up"></i> Like <span class="like-count">${thought.likes?.length || 0}</span></button>
+                <button class="btn btn-light comment-btn" data-id="${thought._id}"><i class="bi bi-chat"></i> Comment <span class="comment-count">${thought.comments?.length || 0}</span></button>
+            </div>
+            <div class="comment-section mt-3" style="display: none;">
+                <ul class="list-unstyled mt-2 comment-list"></ul>
+                <textarea class="form-control mb-2 comment-input" rows="2" placeholder="Write a comment..."></textarea>
+                <button class="btn btn-primary btn-sm post-comment-btn">Post Comment</button>
+                <button class="btn btn-danger btn-sm close-comment-btn">Close Comments</button>
+            </div>
+        </div>
+    </div>
+`;
+document.querySelector('#thoughts-section .row').appendChild(newCard);
+attachEventListeners(newCard);
+}
+
+// Attach event listeners
+function attachEventListeners(card) {
+const jwtToken = localStorage.getItem('jwt');
+const likeButton = card.querySelector('.like-btn');
+const commentButton = card.querySelector('.comment-btn');
+const commentSection = card.querySelector('.comment-section');
+const commentList = card.querySelector('.comment-list');
+const commentInput = card.querySelector('.comment-input');
+const postCommentButton = card.querySelector('.post-comment-btn');
+const closeCommentButton = card.querySelector('.close-comment-btn');
+
+// Like button event
+likeButton.addEventListener('click', () => {
+    if (!jwtToken) {
+        alert('Please login to like posts.');
+        return;
+    }
+    const thoughtId = likeButton.getAttribute('data-id');
+    fetch(`/api/thoughts/${thoughtId}/like`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${jwtToken}` }
+    })
+    .then(response => response.json())
+    .then(data => {
+        likeButton.querySelector('.like-count').textContent = data.likes;
+        likeButton.disabled = true;
+    })
+    .catch(error => console.error('Error liking thought:', error));
+});
+
+// Comment button event (Fetch existing comments)
+commentButton.addEventListener('click', () => {
+    const thoughtId = commentButton.getAttribute('data-id');
+
+    if (commentSection.style.display === 'none' || commentSection.style.display === '') {
+        fetch(`/api/thoughts/${thoughtId}/comments`)
+            .then(response => response.json())
+            .then(comments => {
+                commentList.innerHTML = ''; 
+                comments.forEach(comment => {
+                    const commentItem = document.createElement('li');
+                    commentItem.innerHTML = `<strong>${comment.username || 'Anonymous'}:</strong> ${comment.text}`;
+                    commentList.appendChild(commentItem);
+                });
+
+                commentSection.style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching comments:', error));
+    } else {
+        commentSection.style.display = 'none';
+    }
+});
+
+// Post a new comment
+postCommentButton.addEventListener('click', () => {
+    const thoughtId = commentButton.getAttribute('data-id');
+    const commentText = commentInput.value.trim();
+    if (commentText) {
+        fetch(`/api/thoughts/${thoughtId}/comment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({ comment: commentText })
+        })
+        .then(response => response.json())
+        .then(updatedComments => {
+            commentInput.value = '';
+            commentList.innerHTML = '';
+            updatedComments.forEach(comment => {
+                const commentItem = document.createElement('li');
+                commentItem.innerHTML = `<strong>${comment.username || 'Anonymous'}:</strong> ${comment.text}`;
+                commentList.appendChild(commentItem);
+            });
+        });
+    }
+});
+
+closeCommentButton.addEventListener('click', () => {
+    commentSection.style.display = 'none';
+});
+}
