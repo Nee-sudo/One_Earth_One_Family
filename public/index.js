@@ -162,7 +162,7 @@ loadAllThoughts();
 
 // Function to fetch and display all thoughts
 function loadAllThoughts() {
-fetch('/api/thoughts')
+fetch(`${BACKEND_URL}/api/thoughts`)
 .then(response => response.json())
 .then(thoughts => {
     thoughts.forEach(thought => appendThoughtCard(thought));
