@@ -41,7 +41,9 @@ app.use(express.static('public copy'));
 app.use('/uploads', express.static('static/uploads'));
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(cors({origin: ["http://localhost:4000", "https://oneearthonefamily.up.railway.app","https://oneearthonefamily.up.vercel.app"], // Allow both localhost and deployed frontend
+    methods: ["GET", "POST"],
+    credentials: true }));
 // Storage Setup (Uploads to "public/images/")
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
