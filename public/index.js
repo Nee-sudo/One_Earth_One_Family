@@ -12,7 +12,7 @@
     .then(users => {
       // console.log("user1", users);
       users.forEach(user => {
-        // console.log("user1", user);
+        console.log("user1", user);
         // Create a new user card element
         const userCard = document.createElement('div');
         userCard.className = 'col-lg-3 col-md-6 d-flex align-items-stretch';
