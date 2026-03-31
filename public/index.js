@@ -1,4 +1,4 @@
-const BACKEND_URL = ''; // Replace with your backend URL
+const BACKEND_URL = window.location.protocol === 'https:' ? window.location.origin : 'http://localhost:4000';
 
 // Define userList and userCard
 const userList = document.getElementById('userList');
