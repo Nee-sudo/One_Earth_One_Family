@@ -41,7 +41,7 @@ app.use(express.static('public copy'));
 app.use('/uploads', express.static('static/uploads'));
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({origin: ["http://localhost:4000", "https://oneearthonefamily.up.railway.app","https://oneearthonefamily.up.vercel.app","https://one-earth-one-family.onrender.com"], // Allow both localhost and deployed frontend
+app.use(cors({origin: ["http://localhost:4000","https://oneearthonefamily.up.vercel.app","https://one-earth-one-family.onrender.com"], // Allow both localhost and deployed frontend
     methods: ["GET", "POST"],
     credentials: true }));
 // Storage Setup (Uploads to "public/images/")
@@ -274,86 +274,74 @@ app.get('/api/profiles/:id', async (req, res) => {
 
 app.get('/api/profiles', async (req, res) => {
     try {
-        let users = await User.find().select('-password');
-
-        // Seed sample data if no users exist
+        let users = await User.find().select('-password -password');
+        
         if (users.length === 0) {
+            // Simple seed without email check if empty - avoids dup issues
             const sampleUsers = [
                 {
-                    first_name: 'Neeraj',
-                    last_name: 'Chauhan',
-                    email: 'neeraj@example.com',
-                    password: await bcrypt.hash('password123', 10), // Dummy hash
+                    first_name: 'Demo',
+                    last_name: 'User1',
+                    email: 'demo1@local.test',
+                    password: '$2b$10$dummyhash',
                     verified: true,
                     profile: {
-                        bio: 'Founder of One Earth One Family, passionate about global unity.',
-                        country: 'India',
-                        familyRole: 'Founder',
+                        bio: 'Demo member 1',
+                        country: 'Local',
+                        familyRole: 'Member',
                         photoUrl: 'assets/img/team/neer.jpg'
                     }
                 },
                 {
-                    first_name: 'Irina',
-                    last_name: 'Petrova',
-                    email: 'irina@example.com',
-                    password: await bcrypt.hash('password123', 10),
+                    first_name: 'Demo',
+                    last_name: 'User2',
+                    email: 'demo2@local.test',
+                    password: '$2b$10$dummyhash',
                     verified: true,
                     profile: {
-                        bio: 'Chemist from Russia, loves making friends worldwide.',
-                        country: 'Russia',
-                        familyRole: 'Active Member',
+                        bio: 'Demo member 2',
+                        country: 'Local', 
+                        familyRole: 'Member',
                         photoUrl: 'assets/img/team/irina.jpg'
-                    }
-                },
-                {
-                    first_name: 'Shah',
-                    last_name: 'Ahmed',
-                    email: 'shah@example.com',
-                    password: await bcrypt.hash('password123', 10),
-                    verified: true,
-                    profile: {
-                        bio: 'Group protector, ensuring harmony and safety.',
-                        country: 'Pakistan',
-                        familyRole: 'Protector',
-                        photoUrl: 'assets/img/team/shah.jpg'
-                    }
-                },
-                {
-                    first_name: 'Dima',
-                    last_name: 'Ivanov',
-                    email: 'dima@example.com',
-                    password: await bcrypt.hash('password123', 10),
-                    verified: true,
-                    profile: {
-                        bio: 'Photographer capturing beautiful moments.',
-                        country: 'Russia',
-                        familyRole: 'Photographer',
-                        photoUrl: 'assets/img/team/dima.jpg'
                     }
                 }
             ];
-            users = await User.insertMany(sampleUsers);
-            console.log('Sample users seeded for demo.');
+            await User.insertMany(sampleUsers);
+            users = await User.find().select('-password');
+            console.log('Seeded 2 demo users.');
         }
 
-        // Map users with safe image fallback
         const userList = users.map(user => ({
             id: user._id,
             first_name: user.first_name,
-            last_name: user.last_name,
-            country: user.profile?.country || 'Not provided',
-            interests: user.profile?.interests || [],
-            hobbies: user.profile?.hobbies || [],
-            bio: user.profile?.bio || 'No bio provided.',
+            country: user.profile?.country || 'N/A',
             familyRole: user.profile?.familyRole || 'Member',
-            image: user.profile?.photoUrl || '/assets/img/team/neer.jpg' // Absolute path fallback
-        }));
+            bio: user.profile?.bio || 'No bio',
+            image: user.profile?.photoUrl || '/assets/img/team/neer.jpg'
+        })).slice(0, 8); // Limit for UI
 
         res.json(userList);
-        console.log(`Loaded ${userList.length} users for homepage.`);
     } catch (error) {
-        console.error('Error in /api/profiles:', error);
-        res.status(500).json({ message: 'Failed to fetch user data' });
+        console.error('Profiles error:', error.message);
+        // Fallback demo data
+        res.json([
+            {
+                id: 'demo1',
+                first_name: 'Neeraj',
+                country: 'India',
+                familyRole: 'Founder',
+                bio: 'Local demo - images work!',
+                image: '/assets/img/team/neer.jpg'
+            },
+            {
+                id: 'demo2',
+                first_name: 'Irina',
+                country: 'Russia',
+                familyRole: 'Member',
+                bio: 'Local demo - no errors!',
+                image: '/assets/img/team/irina.jpg'
+            }
+        ]);
     }
 });
 

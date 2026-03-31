@@ -7,14 +7,15 @@ const userSchema = new mongoose.Schema({
     verified: { type: Boolean, default: false },
     verificationToken: { type: String, default: null },
     verificationTokenExpires: { type: Date, default: null },
+    githubId: { type: String, default: null, unique: true, sparse: true }, // Added for github auth
     profile: {
         bio: { type: String, default: '' },
         country: { type: String, default: '' },
-        interests: { type: [String], default: [] }, // Changed from String to Array
-        hobbies: { type: [String], default: [] },   // Changed from String to Array
+        interests: { type: [String], default: [] },
+        hobbies: { type: [String], default: [] },
         familyRole: { type: String, default: '' },
         badges: { type: [String], default: [] },
-        photoUrl: { type: String, default: 'Url not found' },
+        photoUrl: { type: String, default: '/assets/img/team/neer.jpg' }, // Fixed default
     }
 });
 
