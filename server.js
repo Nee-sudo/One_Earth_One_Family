@@ -41,7 +41,7 @@ app.use(express.static('public copy'));
 app.use('/uploads', express.static('static/uploads'));
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({origin: ["http://localhost:4000", "https://oneearthonefamily.up.railway.app","https://oneearthonefamily.up.vercel.app"], // Allow both localhost and deployed frontend
+app.use(cors({origin: ["http://localhost:4000", "https://oneearthonefamily.up.railway.app","https://oneearthonefamily.up.vercel.app","https://one-earth-one-family.onrender.com"], // Allow both localhost and deployed frontend
     methods: ["GET", "POST"],
     credentials: true }));
 // Storage Setup (Uploads to "public/images/")
@@ -274,31 +274,83 @@ app.get('/api/profiles/:id', async (req, res) => {
 
 app.get('/api/profiles', async (req, res) => {
     try {
-        // Fetch all users, excluding their passwords
-        const users = await User.find().select('-password');
+        let users = await User.find().select('-password');
 
-        // Check if no users are found
-        if (!users || users.length === 0) {
-            return res.status(404).json({ message: 'No users found' });
+        // Seed sample data if no users exist
+        if (users.length === 0) {
+            const sampleUsers = [
+                {
+                    first_name: 'Neeraj',
+                    last_name: 'Chauhan',
+                    email: 'neeraj@example.com',
+                    password: await bcrypt.hash('password123', 10), // Dummy hash
+                    verified: true,
+                    profile: {
+                        bio: 'Founder of One Earth One Family, passionate about global unity.',
+                        country: 'India',
+                        familyRole: 'Founder',
+                        photoUrl: 'assets/img/team/neer.jpg'
+                    }
+                },
+                {
+                    first_name: 'Irina',
+                    last_name: 'Petrova',
+                    email: 'irina@example.com',
+                    password: await bcrypt.hash('password123', 10),
+                    verified: true,
+                    profile: {
+                        bio: 'Chemist from Russia, loves making friends worldwide.',
+                        country: 'Russia',
+                        familyRole: 'Active Member',
+                        photoUrl: 'assets/img/team/irina.jpg'
+                    }
+                },
+                {
+                    first_name: 'Shah',
+                    last_name: 'Ahmed',
+                    email: 'shah@example.com',
+                    password: await bcrypt.hash('password123', 10),
+                    verified: true,
+                    profile: {
+                        bio: 'Group protector, ensuring harmony and safety.',
+                        country: 'Pakistan',
+                        familyRole: 'Protector',
+                        photoUrl: 'assets/img/team/shah.jpg'
+                    }
+                },
+                {
+                    first_name: 'Dima',
+                    last_name: 'Ivanov',
+                    email: 'dima@example.com',
+                    password: await bcrypt.hash('password123', 10),
+                    verified: true,
+                    profile: {
+                        bio: 'Photographer capturing beautiful moments.',
+                        country: 'Russia',
+                        familyRole: 'Photographer',
+                        photoUrl: 'assets/img/team/dima.jpg'
+                    }
+                }
+            ];
+            users = await User.insertMany(sampleUsers);
+            console.log('Sample users seeded for demo.');
         }
 
-        // Map the user data to a simplified structure
+        // Map users with safe image fallback
         const userList = users.map(user => ({
             id: user._id,
             first_name: user.first_name,
             last_name: user.last_name,
-            // email: user.email,
             country: user.profile?.country || 'Not provided',
-            interests: user.profile?.interests || 'Not provided',
-            hobbies: user.profile?.hobbies || 'Not provided',
-            bio: user.profile?.bio || 'Not provided',
-            familyRole: user.profile?.familyRole || 'Not provided',
-            image:user.profile?.photoUrl || 'Not provided'
+            interests: user.profile?.interests || [],
+            hobbies: user.profile?.hobbies || [],
+            bio: user.profile?.bio || 'No bio provided.',
+            familyRole: user.profile?.familyRole || 'Member',
+            image: user.profile?.photoUrl || '/assets/img/team/neer.jpg' // Absolute path fallback
         }));
 
-        // Send the response
         res.json(userList);
-        console.log('User list loaded successfully for homepage:');
+        console.log(`Loaded ${userList.length} users for homepage.`);
     } catch (error) {
         console.error('Error in /api/profiles:', error);
         res.status(500).json({ message: 'Failed to fetch user data' });

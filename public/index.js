@@ -1,4 +1,4 @@
-const BACKEND_URL = 'https://oneearthonefamily.up.railway.app'; // Replace with your backend URL
+const BACKEND_URL = 'http://localhost:4000'; // Replace with your backend URL
 
 // Define userList and userCard
 const userList = document.getElementById('userList');
@@ -23,7 +23,7 @@ fetch(`${BACKEND_URL}/api/profiles`)
       userCard.innerHTML = `
         <div class="team-member">
           <div class="member-img">
-          <img src="${user.image}" class="img-fluid" alt="">
+          <img src="${user.image.startsWith('http') ? user.image : '/' + user.image}" class="img-fluid" alt="User profile" onerror="this.src='/assets/img/team/neer.jpg'; this.alt='Default profile';">
             <div class="social">
         <a href="#"><i class="bi bi-twitter"></i></a>
         <a href="#"><i class="bi bi-facebook"></i></a>
@@ -172,13 +172,15 @@ fetch(`${BACKEND_URL}/api/thoughts`)
 
 // Function to display thoughts
 function appendThoughtCard(thought) {
-console.log('User Image:', thought.userImage);
-const newCard = document.createElement('div');
+    // console.log('User Image:', thought.userImage); // Avoid log confusion with invalid paths
+    const newCard = document.createElement('div');
+
 newCard.classList.add('col-lg-4', 'col-md-6');
 newCard.innerHTML = `
     <div class="card">
         <div class="card-header d-flex align-items-center">
-            <img src="${thought.userImage || 'assets/img/default.jpg'}" alt="User Profile" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+            <img src="${thought.userImage ? (thought.userImage.startsWith('http') ? thought.userImage : '/' + thought.userImage) : '/assets/img/team/neer.jpg'}" alt="User Profile" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;" onerror="this.src='/assets/img/team/neer.jpg'">
+
             <h5 class="mb-0">${thought.username || 'Anonymous'}</h5>
         </div>
         <div class="card-body">
