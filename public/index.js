@@ -1,4 +1,4 @@
-const BACKEND_URL = 'http://localhost:4000'; // Replace with your backend URL
+const BACKEND_URL = 'https:one-earth-one-family.onrender.com'; // Replace with your backend URL
 
 // Define userList and userCard
 const userList = document.getElementById('userList');
