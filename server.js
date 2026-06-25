@@ -87,12 +87,13 @@ app.post("/upload", authenticateJWT, upload.single("file"), async (req, res) => 
 // Session Setup
 app.use(
     session({
-        secret: SECRET_KEY,
+        secret: SECRET_KEY || 'dev_session_secret_change_me',
         resave: false,
         saveUninitialized: true,
         cookie: { secure: false }, // Change to true in production with HTTPS
     })
 );
+
 
 // Connect to MongoDB
 mongoose
@@ -113,6 +114,17 @@ app.get('/', (req, res) => {
 app.get('/dashboards', (req, res) => {
     res.render('dashboards');
 })
+
+// Privacy Policy
+app.get('/policy', (req, res) => {
+    res.render('policy');
+});
+
+// Account deletion request page
+app.get('/request-account-deletion', (req, res) => {
+    res.render('request-account-deletion');
+});
+
 // app.get('/dashboard', (req, res) => {
 
 //     res.render('dashbaords');

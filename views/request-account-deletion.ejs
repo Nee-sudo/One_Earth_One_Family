@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request Account Deletion | OneEarth</title>
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="icon" href="/assets/img/favicon_OEOF.jpg" />
+  <style>
+    body {
+      background: #ffffff;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 14px;
+      padding: 22px 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      line-height: 1.2;
+      color: #111827;
+    }
+
+    .back {
+      margin-bottom: 18px;
+    }
+
+    .back a {
+      display: inline-block;
+      color: #4f46e5;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .lead {
+      margin: 10px 0 18px;
+      color: #111827;
+      line-height: 1.6;
+    }
+
+    .email-link {
+      display: inline-block;
+      padding: 10px 14px;
+      background: #4f46e5;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .small {
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      font-family: inherit;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 720px) {
+      .row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .field label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #111827;
+    }
+
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      background: #111827;
+      color: #fff;
+      padding: 11px 14px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="back"><a href="/policy">← Back to Privacy Policy</a></div>
+
+    <div class="card">
+      <h1>Request Account Deletion</h1>
+      <p class="lead">
+        If you want to delete your account and associated data, you can send your request using the form below.
+        This will open your email client with a pre-filled message to <strong>privacy@oneearth.app</strong>.
+      </p>
+
+      <form id="deletionForm" onsubmit="return false;">
+        <div class="row">
+          <div class="field">
+            <label for="fullName">Full name</label>
+            <input id="fullName" type="text" placeholder="Your name" />
+          </div>
+          <div class="field">
+            <label for="accountEmail">Account email</label>
+            <input id="accountEmail" type="email" placeholder="you@example.com" />
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label for="message">Request details (optional)</label>
+          <textarea id="message" placeholder="Tell us you want to delete your account and request permanent removal of your data." ></textarea>
+        </div>
+
+        <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <button type="button" id="emailBtn">Email deletion request</button>
+          <a class="email-link" href="mailto:privacy@oneearth.app?subject=Account%20Deletion%20Request&body=Please%20delete%20my%20OneEarth%20account%20and%20associated%20data.%20My%20account%20email%20is%3A%20%5Byour%20email%5D">Quick email</a>
+        </div>
+
+        <div class="small">
+          Note: This website does not automatically delete your data. A privacy team member will review your request and respond.
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById('deletionForm');
+      const btn = document.getElementById('emailBtn');
+      const nameEl = document.getElementById('fullName');
+      const emailEl = document.getElementById('accountEmail');
+      const messageEl = document.getElementById('message');
+
+      function escapeForMailto(str) {
+        return encodeURIComponent(str || '');
+      }
+
+      btn.addEventListener('click', function () {
+        const fullName = nameEl.value.trim();
+        const accountEmail = emailEl.value.trim();
+        const message = messageEl.value.trim();
+
+        const subject = 'Account Deletion Request';
+        const bodyLines = [
+          'Hello OneEarth Privacy Team,',
+          '',
+          'I am requesting deletion of my OneEarth account and associated data (including permanent removal of my content).',
+          '',
+          'Full name: ' + (fullName || '[not provided]'),
+          'Account email: ' + (accountEmail || '[not provided]'),
+          '',
+          message ? ('Request details: ' + message) : 'Request details: [not provided]',
+          '',
+          'Thank you,'
+        ];
+
+        const mailto = 'mailto:privacy@oneearth.app' +
+          '?subject=' + escapeForMailto(subject) +
+          '&body=' + escapeForMailto(bodyLines.join('\n'));
+
+        window.location.href = mailto;
+      });
+    })();
+  </script>
+</body>
+
+</html>
+
