@@ -26,14 +26,15 @@ const SECRET_KEY = process.env.SECRET_KEY || '';
 
 // Models
 const User = require('./models/User');
-// const Member = require('./models/Profiles');
 const Thought = require('./models/Thought');
+const Report = require('./models/Report');
 const authenticateJWT = require('./middleware/authenticateJWT');
 const thoughtsRoutes = require('./routes/thoughts');
 app.use('/api', thoughtsRoutes);
 //set engine
 app.set('view engine', 'ejs');
 app.set('views', 'views');
+
 
 app.use(express.static('OEOF'));
 app.use(express.static('public'));
@@ -55,6 +56,32 @@ const storage = multer.diskStorage({
 });
  
 const upload = multer({ storage });
+
+// Report evidence upload setup
+const reportStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/uploads/reports');
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase();
+        cb(null, `report_${Date.now()}_${crypto.randomBytes(8).toString('hex')}${ext}`);
+    }
+});
+
+const reportUpload = multer({
+    storage: reportStorage,
+    limits: {
+        fileSize: 8 * 1024 * 1024, // 8MB per file
+        files: 3
+    },
+    fileFilter: (req, file, cb) => {
+        const allowed = ['image/', 'video/'];
+        const ok = allowed.some(prefix => (file.mimetype || '').startsWith(prefix));
+        if (!ok) return cb(new Error('Invalid file type for evidence. Only images and videos are allowed.'));
+        cb(null, true);
+    }
+});
+
 
 // API to Upload Image
 app.post("/upload", authenticateJWT, upload.single("file"), async (req, res) => {
@@ -120,10 +147,167 @@ app.get('/policy', (req, res) => {
     res.render('policy');
 });
 
+// Child safety standards page
+app.get('/child-safety', (req, res) => {
+    res.render('child-safety');
+});
+
+// Report a Safety Concern page
+app.get('/report-safety', (req, res) => {
+    res.render('report-safety');
+});
+
 // Account deletion request page
 app.get('/request-account-deletion', (req, res) => {
     res.render('request-account-deletion');
 });
+
+// Public child-safety reporting endpoint
+// NOTE: This endpoint is public by design, but protected with rate limiting + validation.
+const inMemoryReportRate = new Map();
+const REPORT_RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const REPORT_RATE_LIMIT_MAX = 10; // 10 submissions / window per IP
+
+function sanitizeText(input) {
+    return String(input || '')
+        .replace(/[\u0000-\u001F\u007F]/g, '') // strip control chars
+        .trim();
+}
+
+function getClientIp(req) {
+    const xf = req.headers['x-forwarded-for'];
+    if (typeof xf === 'string' && xf.length > 0) {
+        return xf.split(',')[0].trim();
+    }
+    return (req.connection && req.connection.remoteAddress) || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+app.post('/api/reports/submit', reportUpload.fields([
+    { name: 'screenshot', maxCount: 1 },
+    { name: 'image', maxCount: 1 },
+    { name: 'video', maxCount: 1 },
+]), async (req, res) => {
+    try {
+        const ip = getClientIp(req);
+        const now = Date.now();
+        const bucket = inMemoryReportRate.get(ip) || { count: 0, start: now };
+        if (now - bucket.start > REPORT_RATE_LIMIT_WINDOW_MS) {
+            bucket.start = now;
+            bucket.count = 0;
+        }
+        bucket.count += 1;
+        inMemoryReportRate.set(ip, bucket);
+        if (bucket.count > REPORT_RATE_LIMIT_MAX) {
+            return res.status(429).json({ message: 'Too many reports submitted. Please try again later.' });
+        }
+
+        const contentType = sanitizeText(req.body.contentType);
+        const contentId = sanitizeText(req.body.contentId);
+        const reportReason = sanitizeText(req.body.reportReason);
+        const description = sanitizeText(req.body.description);
+        const username = sanitizeText(req.body.username);
+        const contentUrl = sanitizeText(req.body.contentUrl);
+        const email = sanitizeText(req.body.email);
+        const reportedUserId = sanitizeText(req.body.reportedUserId);
+
+        const allowedContentTypes = ['user_profile', 'post', 'comment', 'chat_message', 'image', 'video', 'group', 'other'];
+        const allowedReasons = [
+            'spam','harassment','hate_speech','violence','threats','illegal_activity','fake_profile','impersonation',
+            'adult_sexual_content','child_sexual_abuse_or_exploitation','self_harm','terrorism_or_extremism','privacy_violation',
+            'copyright_violation','misinformation','other'
+        ];
+
+        if (!allowedContentTypes.includes(contentType)) {
+            return res.status(400).json({ message: 'Invalid report category.' });
+        }
+        if (!allowedReasons.includes(reportReason)) {
+            return res.status(400).json({ message: 'Invalid report reason.' });
+        }
+        if (!description || description.length < 10) {
+            return res.status(400).json({ message: 'Description is required (min 10 characters).' });
+        }
+        if (description.length > 500) {
+            // frontend enforces 500; backend enforces too
+            return res.status(400).json({ message: 'Description exceeds maximum length.' });
+        }
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format.' });
+        }
+        if (contentUrl && contentUrl.length > 500) {
+            return res.status(400).json({ message: 'Content URL is too long.' });
+        }
+
+        const ipBasedReporterEmail = email || null;
+        const reporterUserId = null; // public form may be anonymous in this app
+
+        const highestChildSafety = reportReason === 'child_sexual_abuse_or_exploitation';
+        const priority = highestChildSafety ? 'highest' : (reportReason === 'violence' || reportReason === 'terrorism_or_extremism' || reportReason === 'illegal_activity' || reportReason === 'threats' ? 'high' : (['harassment','hate_speech'].includes(reportReason) ? 'medium' : 'low'));
+
+        const multerFiles = req.files || {};
+        const screenshotFile = (multerFiles['screenshot'] && multerFiles['screenshot'][0]) || null;
+        const imageFile = (multerFiles['image'] && multerFiles['image'][0]) || null;
+        const videoFile = (multerFiles['video'] && multerFiles['video'][0]) || null;
+
+        const screenshotUrl = screenshotFile ? `/uploads/reports/${path.basename(screenshotFile.filename)}` : null;
+        const imageUrl = imageFile ? `/uploads/reports/${path.basename(imageFile.filename)}` : null;
+        const videoUrl = videoFile ? `/uploads/reports/${path.basename(videoFile.filename)}` : null;
+
+        // Duplicate prevention: hash key of key fields
+        const dupKeyBase = [
+            contentType,
+            contentId || '',
+            reportReason,
+            description,
+            email || '',
+            username || ''
+        ].join('|');
+        const dupHash = crypto.createHash('sha256').update(dupKeyBase).digest('hex');
+        const hashKey = `dup_${dupHash}`;
+
+        const WINDOW_HOURS = 24;
+        const since = new Date(Date.now() - WINDOW_HOURS * 60 * 60 * 1000);
+
+        // Store hashKey inside description? we can’t without schema change.
+        // Instead, we will compare by a deterministic reportId prefix derived from hash.
+        const reportId = `RPT_${dupHash.slice(0, 16).toUpperCase()}`;
+
+        const existing = await Report.findOne({ reportId, createdAt: { $gte: since } });
+        if (existing) {
+            return res.status(200).json({ message: 'Report already received recently. Our team will review it.' });
+        }
+
+        const report = new Report({
+            reportId,
+            reporterUserId,
+            reporterEmail: ipBasedReporterEmail,
+            reportedUserId: reportedUserId || null,
+            contentType,
+            contentId: contentId || null,
+            reportReason,
+            description,
+            evidence: {
+                screenshotUrl,
+                imageUrl,
+                videoUrl,
+            },
+            status: highestChildSafety ? 'queued' : 'pending',
+            priority,
+            moderatorNotes: '',
+        });
+
+        await report.save();
+
+        return res.status(201).json({
+            message: 'Report submitted successfully.'
+        });
+    } catch (err) {
+        console.error('Report submit error:', err);
+        const msg = err && err.message ? err.message : 'Internal server error';
+        return res.status(400).json({ message: msg });
+    }
+});
+
+
 
 // app.get('/dashboard', (req, res) => {
 

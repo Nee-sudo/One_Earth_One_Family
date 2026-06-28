@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report a Safety Concern | OneEarth</title>
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="icon" href="/assets/img/favicon_OEOF.jpg" />
+  <style>
+    body {
+      background: #ffffff;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 14px;
+      padding: 22px 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    }
+
+    .back {
+      margin-bottom: 18px;
+    }
+
+    .back a {
+      display: inline-block;
+      color: #4f46e5;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      line-height: 1.2;
+      color: #111827;
+    }
+
+    .subtitle {
+      margin: 10px 0 18px;
+      color: #111827;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 720px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .field label {
+      display: block;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #111827;
+      font-size: 14px;
+    }
+
+    input[type="text"], input[type="email"], select, textarea {
+      width: 100%;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      font-family: inherit;
+      background: #fff;
+      color: #111827;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .evidence-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 720px) {
+      .evidence-row {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      background: #111827;
+      color: #fff;
+      padding: 11px 14px;
+      font-weight: 800;
+    }
+
+    .muted {
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .status {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: rgba(79, 70, 229, 0.06);
+      color: #111827;
+      display: none;
+    }
+
+    .status.error {
+      background: rgba(239, 68, 68, 0.06);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="back">
+      <a href="/">← Back to Home</a>
+    </div>
+
+    <div class="card">
+      <h1>Report a Safety Concern</h1>
+      <p class="subtitle">Help us keep One Earth One Family safe by reporting harmful or illegal content.</p>
+
+      <form id="reportForm" enctype="multipart/form-data">
+        <div class="grid">
+          <div class="field">
+            <label for="contentType">Report Category</label>
+            <select id="contentType" name="contentType" required>
+              <option value="user_profile">User Profile</option>
+              <option value="post">Post</option>
+              <option value="comment">Comment</option>
+              <option value="chat_message">Chat Message</option>
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+              <option value="group">Group</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="reportReason">Report Reason</label>
+            <select id="reportReason" name="reportReason" required>
+              <option value="spam">Spam</option>
+              <option value="harassment">Harassment</option>
+              <option value="hate_speech">Hate Speech</option>
+              <option value="violence">Violence</option>
+              <option value="threats">Threats</option>
+              <option value="illegal_activity">Illegal Activity</option>
+              <option value="fake_profile">Fake Profile</option>
+              <option value="impersonation">Impersonation</option>
+              <option value="adult_sexual_content">Adult Sexual Content</option>
+              <option value="child_sexual_abuse_or_exploitation">Child Sexual Abuse or Exploitation</option>
+              <option value="self_harm">Self Harm</option>
+              <option value="terrorism_or_extremism">Terrorism or Extremism</option>
+              <option value="privacy_violation">Privacy Violation</option>
+              <option value="copyright_violation">Copyright Violation</option>
+              <option value="misinformation">Misinformation</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;" class="grid">
+          <div class="field">
+            <label for="username">Username (optional)</label>
+            <input id="username" type="text" name="username" placeholder="Username" />
+          </div>
+          <div class="field">
+            <label for="contentUrl">Content URL (optional)</label>
+            <input id="contentUrl" type="text" name="contentUrl" placeholder="https://..." />
+          </div>
+        </div>
+
+        <div style="margin-top:14px;" class="grid">
+          <div class="field">
+            <label for="email">Email (optional)</label>
+            <input id="email" type="email" name="email" placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="reportedUserId">Reported User ID (optional)</label>
+            <input id="reportedUserId" type="text" name="reportedUserId" placeholder="If known" />
+          </div>
+        </div>
+
+        <div style="margin-top:14px;" class="field">
+          <label for="description">Description (required)</label>
+          <textarea id="description" name="description" maxlength="500" required placeholder="Describe what happened, why you believe this is harmful/illegal, and any useful context."></textarea>
+          <div class="muted" id="charCount">0 / 500</div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <p style="font-weight:900; color:#111827; margin-bottom:10px;">Upload Evidence (optional)</p>
+          <div class="evidence-row">
+            <div class="field">
+              <label for="screenshot">Upload Screenshot</label>
+              <input id="screenshot" type="file" name="screenshot" accept="image/*" />
+            </div>
+            <div class="field">
+              <label for="image">Upload Image</label>
+              <input id="image" type="file" name="image" accept="image/*" />
+            </div>
+            <div class="field">
+              <label for="video">Upload Video</label>
+              <input id="video" type="file" name="video" accept="video/*" />
+            </div>
+          </div>
+          <p class="muted" style="margin-top:10px;">For safety, please do not upload sensitive personal information unnecessarily.</p>
+        </div>
+
+        <div style="margin-top:18px;">
+          <button type="submit">Submit Report</button>
+        </div>
+
+        <div id="status" class="status" role="status" aria-live="polite">
+          <strong>Thank you.</strong>
+          <div style="margin-top:6px;">Your report has been received.</div>
+          <div style="margin-top:4px;">Our Trust &amp; Safety team will review it as quickly as possible.</div>
+        </div>
+
+        <div id="errorStatus" class="status error" role="alert"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById('reportForm');
+      const status = document.getElementById('status');
+      const errorStatus = document.getElementById('errorStatus');
+      const description = document.getElementById('description');
+      const charCount = document.getElementById('charCount');
+
+      function updateCharCount() {
+        const len = (description.value || '').length;
+        charCount.textContent = len + ' / 500';
+      }
+      description.addEventListener('input', updateCharCount);
+      updateCharCount();
+
+      // Prefill from query params (used by in-app reporting)
+      const params = new URLSearchParams(window.location.search);
+      const preContentType = params.get('contentType');
+      const preReason = params.get('reportReason');
+      const preUsername = params.get('username');
+      const preContentUrl = params.get('contentUrl');
+      const preDescription = params.get('description');
+
+      if (preContentType) document.getElementById('contentType').value = preContentType;
+      if (preReason) document.getElementById('reportReason').value = preReason;
+      if (preUsername) document.getElementById('username').value = preUsername;
+      if (preContentUrl) document.getElementById('contentUrl').value = preContentUrl;
+      if (preDescription) {
+        document.getElementById('description').value = preDescription;
+        updateCharCount();
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        status.style.display = 'none';
+        errorStatus.style.display = 'none';
+        errorStatus.textContent = '';
+
+        const formData = new FormData(form);
+
+        try {
+          const res = await fetch('/api/reports/submit', {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg = data && data.message ? data.message : 'Failed to submit report. Please try again.';
+            errorStatus.textContent = msg;
+            errorStatus.style.display = 'block';
+            return;
+          }
+
+          status.style.display = 'block';
+          form.reset();
+          updateCharCount();
+          // Remove query params after submit to avoid stale prefills
+          window.history.replaceState({}, document.title, '/report-safety');
+        } catch (err) {
+          errorStatus.textContent = 'Network error. Please try again.';
+          errorStatus.style.display = 'block';
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
+
